@@ -6,6 +6,7 @@ import os
 from dotenv import load_dotenv
 from pathlib import Path
 from parsedmockdata import mockdata
+from app.etc.tools import parse_shopping_results
 
 
 
@@ -23,24 +24,6 @@ load_dotenv(dotenv_path=Path(__file__).parent / ".env")
 
 serpapi_key = os.getenv("SERPAPI")
 
-def parse_shopping_results(data: dict) -> list[dict]:
-    results = []
-    for item in  data.get("shopping_results", []):
-        results.append({
-            "title": item.get("title"),
-            "store": item.get("source"),
-            "price": item.get("price"),
-            "extracted_price": item.get("extracted_price"),
-            "old_price": item.get("old_price"),
-            "rating": item.get("rating"),
-            "reviews": item.get("reviews"),
-            "link": item.get("product_link"),
-            "thumbnail": item.get("thumbnail"),
-            "delivery": item.get("delivery"),
-            "tag": item.get("tag"),  # e.g. "30% OFF"
-        })
-    return results
-
 def search_google_shopping(query: str, location: str):
     # THIS WORKS CUT IT OFF TO SAFE SEARCHES.
     params = {
@@ -57,10 +40,10 @@ def search_google_shopping(query: str, location: str):
 @app.get("/products")
 def get_products(q: str, location: str = None):
 
-    data = search_google_shopping(q, location)
-    parsed_data = parse_shopping_results(data)
+    # data = search_google_shopping(q, location)
+    # parsed_data = parse_shopping_results(data)
 
-    return {"results": parsed_data}
+    return {"results": mockdata}
 
 
 app.mount("/", StaticFiles(directory=BASE_DIR / "static", html=True), name="static")
