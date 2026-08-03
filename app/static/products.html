@@ -259,7 +259,7 @@
     if (location) params.set("location", location);
 
     try {
-      const res = await fetch(`${API_BASE}/products?${params.toString()}`);
+      const res = await fetch(`${API_BASE}/get_products?${params.toString()}`);
       if (!res.ok) throw new Error(`Server responded ${res.status}`);
       const data = await res.json();
       renderResults(data.results || []);

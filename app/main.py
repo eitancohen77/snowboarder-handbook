@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 import requests
 import os
 from dotenv import load_dotenv
@@ -37,7 +38,8 @@ def search_google_shopping(query: str, location: str):
     return response.json()
     
 
-@app.get("/products")
+
+@app.get("/get_products")
 def get_products(q: str, location: str = None):
 
     # data = search_google_shopping(q, location)
@@ -45,5 +47,13 @@ def get_products(q: str, location: str = None):
 
     return {"results": mockdata}
 
+@app.get("/products")
+def products():
+    return FileResponse(BASE_DIR / "static" / "products.html")
 
-app.mount("/", StaticFiles(directory=BASE_DIR / "static", html=True), name="static")
+@app.get("/resorts")
+def resorts():
+    return FileResponse(BASE_DIR / "static" / "resorts.html")
+
+
+app.mount("/static", StaticFiles(directory=BASE_DIR / "static", html=True), name="static")
