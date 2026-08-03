@@ -1,4 +1,4 @@
-[
+mockdata = [
     {
         "title": "Vans Men's Infuse Snowboard Boots",
         "store": "evo.com",
@@ -35,7 +35,7 @@
         "reviews": 8,
         "link": "https://www.google.com/search?ibp=oshop&q=Vans Infuse Snowboard Boot&prds=catalogid:15560156191638276456,productid:15491911779988263832,headlineOfferDocid:1978696770103565693,imageDocid:15726178381536256855,rds:PC_5135756010967386681|PROD_PC_5135756010967386681,gpcid:5135756010967386681,mid:576462846934056854,pvt:hg&hl=en&gl=us&udm=28",
         "thumbnail": "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcRdmRcELtzBUOBWqYvdCx8bt1RKkfeaT87AZSfR3Gmp69hrbgSBiL-ougK7rTBobjxfW-YGzxAAx6RcmPuGe5Fgu3qGebisEV4F8GYvCyYYk72a1VD_ZbBA",
-        "delivery": null,
+        "delivery": None,
         "tag": "30% OFF"
     },
     {
@@ -57,12 +57,12 @@
         "price": "$278.00",
         "extracted_price": 278.0,
         "old_price": "$464",
-        "rating": null,
-        "reviews": null,
+        "rating": None,
+        "reviews": None,
         "link": "https://www.google.com/search?ibp=oshop&q=Vans Infuse Snowboard Boot&prds=catalogid:8087255852153759341,productid:4883188327112493141,headlineOfferDocid:6473375971495300205,imageDocid:15561039696544182523,gpcid:14302253804662335494,mid:576462885785270462,pvt:hg&hl=en&gl=us&udm=28",
         "thumbnail": "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcShl8V4AIY2eCgMDFboJ8c3fC_uilfU0-LU_KOWwxz6Yq9rYEdrwc4SZltJEHCLGW343cpUOQ2Mb2wPvmTIlLz_2-aB-Z9MQx8kkaf3uJWLExtsnIPkSIed",
-        "delivery": null,
-        "tag": null
+        "delivery": None,
+        "tag": None
     },
     {
         "title": "Vans Hi-Standard Pro Snowboard Boots",
@@ -74,7 +74,7 @@
         "reviews": 94,
         "link": "https://www.google.com/search?ibp=oshop&q=Vans Infuse Snowboard Boot&prds=catalogid:9626554067864407962,productid:13388628284667624982,headlineOfferDocid:8566357187874025595,imageDocid:7139205453466738787,rds:PC_3570573637605067611|PROD_PC_3570573637605067611,gpcid:3570573637605067611,mid:576462816596137980,pvt:hg&hl=en&gl=us&udm=28",
         "thumbnail": "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcRjFd93YhwCHddZ8-uF2A20t81OQkaEAzhbKLbXJGgDSBF-e1ty_PVo2dQJys8pX9bK2T-6tTjR-zutCPeiGVL8SnKjuxXfagKSRLfOMy8GBVjkH-ySKNtL",
-        "delivery": null,
+        "delivery": None,
         "tag": "30% OFF"
     },
     {
@@ -87,7 +87,7 @@
         "reviews": 23,
         "link": "https://www.google.com/search?ibp=oshop&q=Vans Infuse Snowboard Boot&prds=productid:3321090379177607162,headlineOfferDocid:3321090379177607162,imageDocid:9132042876120338757,rds:PC_9145611467279030815|PROD_PC_9145611467279030815,pvt:hg&hl=en&gl=us&udm=28",
         "thumbnail": "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcTca9o7QpvCHHiW5UZX7WB_H180IxikbCnX9mkaD5q4A0DI1-slBGnm90Ea9-IEa44klY4WigkOTnQETBCB9vSQ69BOwOBQmjEhG6-EDui2BHLxLuKEKQII",
-        "delivery": null,
+        "delivery": None,
         "tag": "20% OFF"
     },
     {
@@ -95,39 +95,39 @@
         "store": "GetBoards.com",
         "price": "$299.98",
         "extracted_price": 299.98,
-        "old_price": null,
+        "old_price": None,
         "rating": 4.8,
         "reviews": 7,
         "link": "https://www.google.com/search?ibp=oshop&q=Vans Infuse Snowboard Boot&prds=catalogid:11377206270084159073,productid:9219251726629722805,headlineOfferDocid:8180317028665036154,imageDocid:12571056678292418501,rds:PC_14126984271693261082|PROD_PC_14126984271693261082,gpcid:14126984271693261082,mid:576462777669813075,pvt:hg&hl=en&gl=us&udm=28",
         "thumbnail": "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcRMPfoasiTH3-C_ZtQ-Hg_tCPDcScQm_1j7EHfEKAiS426mBE8TJGbSi928_MNjk0hlvF9b7licedP5rbxnUO5HqauxK-R7IMFfzU3xLqX6mRVxCIN5kkhL",
-        "delivery": null,
-        "tag": null
+        "delivery": None,
+        "tag": None
     },
     {
         "title": "Vans Infuse Black/White / 11.5M",
         "store": "Val Surf",
         "price": "$419.99",
         "extracted_price": 419.99,
-        "old_price": null,
+        "old_price": None,
         "rating": 4.5,
         "reviews": 4,
         "link": "https://www.google.com/search?ibp=oshop&q=Vans Infuse Snowboard Boot&prds=productid:6582930835501172138,headlineOfferDocid:6582930835501172138,imageDocid:11833898650691606426,rds:PC_16129530004433914986|PROD_PC_16129530004433914986,pvt:hg&hl=en&gl=us&udm=28",
         "thumbnail": "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcRstUkoDyeHto_vWltwkZRkOo_ZgUulPQqZLbl8oCQH72XLfINMMmvGq4IlqhYZL-pPm3M-tf-3kaQYj_m-0b27JjT91haxUlWNf8J0-euTQdGKIffzhm6S",
         "delivery": "Free delivery",
-        "tag": null
+        "tag": None
     },
     {
         "title": "Vans Infuse Snowboard Boot",
         "store": "Milosport",
         "price": "$419.99",
         "extracted_price": 419.99,
-        "old_price": null,
-        "rating": null,
-        "reviews": null,
+        "old_price": None,
+        "rating": None,
+        "reviews": None,
         "link": "https://www.google.com/search?ibp=oshop&q=Vans Infuse Snowboard Boot&prds=catalogid:11237211713575781362,productid:17684841974336096034,headlineOfferDocid:3854704104973865296,imageDocid:11736648338236333621,gpcid:13855447442014352470,mid:576462886097452952,pvt:hg&hl=en&gl=us&udm=28",
         "thumbnail": "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcQo0fAUYyVuqvRP0hvtujou9yCvu1vQaGtAphdHMvFhmJKuX0ovDdfruvD0mzwAcPazwbmeAa3W16-VwWObOiL0CT_SCbZFBJeJveboAut4msZrbW4C-L4L7g",
         "delivery": "Free delivery",
-        "tag": null
+        "tag": None
     },
     {
         "title": "Vans Aura OG Snowboard Boots",
@@ -139,7 +139,7 @@
         "reviews": 97,
         "link": "https://www.google.com/search?ibp=oshop&q=Vans Infuse Snowboard Boot&prds=catalogid:17652666252397448259,productid:7850885918251577927,headlineOfferDocid:5751443668771493243,imageDocid:6087441689155124682,rds:PC_3726859755774849696|PROD_PC_3726859755774849696,gpcid:3726859755774849696,mid:576462895445032716,pvt:hg&hl=en&gl=us&udm=28",
         "thumbnail": "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcSYV0SkSlcW5v7Sbycz-Z3_MWqaMI8nVqvGcSuD0aGyk8-o_ZfENLYaHwuOH_rPfaworn6K9Eb6Z8xSz4nE7WV2TRBQzr0qBtm-629fFCF79Mx-xOBN84Pk",
-        "delivery": null,
+        "delivery": None,
         "tag": "30% OFF"
     },
     {
@@ -147,13 +147,13 @@
         "store": "Editorialist",
         "price": "$616.00",
         "extracted_price": 616.0,
-        "old_price": null,
-        "rating": null,
-        "reviews": null,
+        "old_price": None,
+        "rating": None,
+        "reviews": None,
         "link": "https://www.google.com/search?ibp=oshop&q=Vans Infuse Snowboard Boot&prds=productid:6282077312191973903,headlineOfferDocid:6282077312191973903,imageDocid:3202864853249564430,pvt:hg&hl=en&gl=us&udm=28",
         "thumbnail": "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcQi96HGMrKOfOFXx20AgYKRrycYcMGRZWYZnANfRjwU412Ek2gZI-mqosqqjR4aOGOUU7pdOccw4fMPZ-QN7qyWdOvQhmoZXqmOVENKJmzOcJXHo1uz6zlSgis",
-        "delivery": null,
-        "tag": null
+        "delivery": None,
+        "tag": None
     },
     {
         "title": "Snowboard Boots Vans Hi-Standard OG",
@@ -165,7 +165,7 @@
         "reviews": 264,
         "link": "https://www.google.com/search?ibp=oshop&q=Vans Infuse Snowboard Boot&prds=catalogid:2740740361024474445,productid:1911944726924819070,headlineOfferDocid:6984975499965882386,imageDocid:17433695139662071030,rds:PC_15856706220683815265|PROD_PC_15856706220683815265,gpcid:15856706220683815265,mid:576462900747755078,pvt:hg&hl=en&gl=us&udm=28",
         "thumbnail": "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcRNSRYiTdOXtie1SlVMiZyS3HJ6LLcM4t1LziZ9xaKLrUqvv-wsxOX57tJqa8-J5Rpj2hEJSggizZhvYKiXKlKX_LuOfYNsZ8ux6fW8Dcm81cZ6VnkJFHyQ",
-        "delivery": null,
+        "delivery": None,
         "tag": "30% OFF"
     },
     {
@@ -178,7 +178,7 @@
         "reviews": 5,
         "link": "https://www.google.com/search?ibp=oshop&q=Vans Infuse Snowboard Boot&prds=catalogid:1965623914988050302,productid:10659778122936217274,headlineOfferDocid:14260493759318916804,imageDocid:9196984550021839971,rds:PC_2460796004543099508|PROD_PC_2460796004543099508,gpcid:2460796004543099508,mid:576462511892544084,pvt:hg&hl=en&gl=us&udm=28",
         "thumbnail": "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcSDeD5qqy-0vaimpca9Web_3OBcR7C7-HwNl0oMzPiOTHAPq_UFQiE_xq32xEMK9FcVnmnLRiUMrNpPFvnusVAL7Uk6_TNVOVz1APMMvo_hfyV9KMZl8DQ3bQ",
-        "delivery": null,
+        "delivery": None,
         "tag": "30% OFF"
     },
     {
@@ -191,7 +191,7 @@
         "reviews": 99,
         "link": "https://www.google.com/search?ibp=oshop&q=Vans Infuse Snowboard Boot&prds=catalogid:13973137024537431343,productid:9611465765061889008,headlineOfferDocid:13459343419836968471,imageDocid:17902520375281182210,rds:PC_11041271152116621962|PROD_PC_11041271152116621962,gpcid:11041271152116621962,mid:576462826597601826,pvt:hg&hl=en&gl=us&udm=28",
         "thumbnail": "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcSTvC7vYLF9RjTqzilSfiHrO8vhMpRFWo_3j_n-B3zqXgCvXZ2nOJ5W-t-tk7nTTW1Q5jymIOZcmzWLAonWa7nOMW5e9mAGffBHoqTunZdGrVud7pOSmqtH",
-        "delivery": null,
+        "delivery": None,
         "tag": "30% OFF"
     },
     {
@@ -225,26 +225,26 @@
         "store": "GetBoards.com",
         "price": "$419.95",
         "extracted_price": 419.95,
-        "old_price": null,
+        "old_price": None,
         "rating": 4.7,
         "reviews": 23,
         "link": "https://www.google.com/search?ibp=oshop&q=Vans Infuse Snowboard Boot&prds=productid:1213686508776436301,headlineOfferDocid:1213686508776436301,imageDocid:7460269756488725228,rds:PC_9145611467279030815|PROD_PC_9145611467279030815,pvt:hg&hl=en&gl=us&udm=28",
         "thumbnail": "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcT8_VKoYLgKXq9YgIbKCxHybPAR2i5c19H_OvYnW6MPYKVTBpReri3pgxXphckq5VfPSZFN9Q-wzFPbk32DHSaThjW4nUSsqhso7MNecsC3",
-        "delivery": null,
-        "tag": null
+        "delivery": None,
+        "tag": None
     },
     {
         "title": "Used Vans Infuse Mens Snowboard Boots Black Senior 10",
         "store": "Play It Again Sports",
         "price": "$99.99",
         "extracted_price": 99.99,
-        "old_price": null,
-        "rating": null,
-        "reviews": null,
+        "old_price": None,
+        "rating": None,
+        "reviews": None,
         "link": "https://www.google.com/search?ibp=oshop&q=Vans Infuse Snowboard Boot&prds=productid:16140431391587264162,headlineOfferDocid:16140431391587264162,imageDocid:3815308414216848026,pvt:hg&hl=en&gl=us&udm=28",
         "thumbnail": "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcQ4N4w095V899QW8OEVmmETOORE6XirxXcJjaILiBONnlflILSX_qebBCw9zVA9A0x4mLKuXnrKyzCklp-BydnBwt4V6zhySmTgF3m2nqve870kS17WkICYI_o",
-        "delivery": null,
-        "tag": null
+        "delivery": None,
+        "tag": None
     },
     {
         "title": "Vans Women's Encore Pro Snowboard Boots",
@@ -256,7 +256,7 @@
         "reviews": 3,
         "link": "https://www.google.com/search?ibp=oshop&q=Vans Infuse Snowboard Boot&prds=catalogid:10884924682666246068,productid:10708960115314163633,headlineOfferDocid:12295283500210504453,imageDocid:14263880464715150248,rds:PC_12825794576689275046|PROD_PC_12825794576689275046,gpcid:12825794576689275046,mid:576462898758093325,pvt:hg&hl=en&gl=us&udm=28",
         "thumbnail": "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcSvIAqfRZfTVEyM8kA8Eov6bkYY63wFo_wI2782mqF21YZbAM_wbAav3vXpSb4lptmbYXff0YdaZxtiJ2pt6vS2y8p58chspkDFukIBxeNCJ6zouEeP6Buw",
-        "delivery": null,
+        "delivery": None,
         "tag": "30% OFF"
     },
     {
@@ -282,7 +282,7 @@
         "reviews": 3,
         "link": "https://www.google.com/search?ibp=oshop&q=Vans Infuse Snowboard Boot&prds=catalogid:7519002774709271380,productid:950969367707822449,headlineOfferDocid:7912799195024890729,imageDocid:4322439943762835567,rds:PC_558185706172695828|PROD_PC_558185706172695828,gpcid:558185706172695828,mid:576462737169841001,pvt:hg&hl=en&gl=us&udm=28",
         "thumbnail": "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcS21kwlrKh9rk3PwE0whVQvXVfV7R0VlVD4frDTu_LCRclQPpOx2JKhR3CkClw5cFujG4x0SLFmodmPNb29h3hpgqTm7KxKtqSwc4Ru__6SOEbPYZes1RlX",
-        "delivery": null,
+        "delivery": None,
         "tag": "30% OFF"
     },
     {
@@ -295,7 +295,7 @@
         "reviews": 1,
         "link": "https://www.google.com/search?ibp=oshop&q=Vans Infuse Snowboard Boot&prds=catalogid:14577683583644081514,productid:9476667773126095508,headlineOfferDocid:18221982127165167004,imageDocid:6099021591319566813,rds:PC_2888467037180616926|PROD_PC_2888467037180616926,gpcid:2888467037180616926,mid:576462819951350484,pvt:hg&hl=en&gl=us&udm=28",
         "thumbnail": "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcTTrPE46TNGTNMHY3UXO2kh4LJzSLlYgWHYlukfQST0hDD3y0Faej2NAfYbpqGOOPIf2xxRae4a6cMaqI7-IO4TTXw-b80qDTan_H_QdW_0RQrMZ6KtNhWH",
-        "delivery": null,
+        "delivery": None,
         "tag": "30% OFF"
     },
     {
@@ -303,13 +303,13 @@
         "store": "Play It Again Sports",
         "price": "$149.99",
         "extracted_price": 149.99,
-        "old_price": null,
-        "rating": null,
-        "reviews": null,
+        "old_price": None,
+        "rating": None,
+        "reviews": None,
         "link": "https://www.google.com/search?ibp=oshop&q=Vans Infuse Snowboard Boot&prds=productid:10223045197930882752,headlineOfferDocid:10223045197930882752,imageDocid:4658322539212614324,pvt:hg&hl=en&gl=us&udm=28",
         "thumbnail": "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcQ86IamZwPQfIbRXzuHhjLEJmYI1mdtuu3pJ4usvuSeuBoF9qmmYgJ2KBmy-7f7oo31SxRnj_YLTFDdJhGMiRo3jXjXG3hUBplOYV7T3l0GoTXfT7XglfE",
-        "delivery": null,
-        "tag": null
+        "delivery": None,
+        "tag": None
     },
     {
         "title": "Vans Hi-Standard Linerless DX Snowboard Boots",
@@ -329,13 +329,13 @@
         "store": "PRFO Sports",
         "price": "$126.00",
         "extracted_price": 126.0,
-        "old_price": null,
+        "old_price": None,
         "rating": 4.3,
         "reviews": 86,
         "link": "https://www.google.com/search?ibp=oshop&q=Vans Infuse Snowboard Boot&prds=catalogid:4155138059627022211,productid:6539917555216085644,headlineOfferDocid:6515277212476077427,imageDocid:4186315717412415822,rds:PC_17136761602399659179|PROD_PC_17136761602399659179,gpcid:17136761602399659179,mid:576462788592394564,pvt:hg&hl=en&gl=us&udm=28",
         "thumbnail": "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcSfpj_YRZk4IolGYdu6NbxEXSHMV4ES3LCdYXb5fpq3XmbM8n1-LvSsVGHhcIXq7Ah6wc6ETPuJ9GgD0vMIQ5j7GzOHt3hRQVp9EZIBPWUkkIxDqawKcgpN",
-        "delivery": null,
-        "tag": null
+        "delivery": None,
+        "tag": None
     },
     {
         "title": "Vans Women's Encore OG Snowboard Boots",
@@ -347,7 +347,7 @@
         "reviews": 142,
         "link": "https://www.google.com/search?ibp=oshop&q=Vans Infuse Snowboard Boot&prds=catalogid:7879225850324962027,productid:17464267714401561139,headlineOfferDocid:15991521881221411235,imageDocid:13946958564633577190,rds:PC_6557350853324727025|PROD_PC_6557350853324727025,gpcid:6557350853324727025,mid:576462790728438043,pvt:hg&hl=en&gl=us&udm=28",
         "thumbnail": "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcTsX1gWMOeX5DIgCk8_EiokyUC_02oKeLXHHPlxTUXXbCxKagij7SZKCTocE29TgiBPzuYqAXEdLNnkVmsNwRiPzcvwgoeBnYMsGpXfB_weD1g-LFkBy8RA",
-        "delivery": null,
+        "delivery": None,
         "tag": "30% OFF"
     },
     {
@@ -368,13 +368,13 @@
         "store": "Directive Boardshop",
         "price": "$419.95",
         "extracted_price": 419.95,
-        "old_price": null,
+        "old_price": None,
         "rating": 4.5,
         "reviews": 99,
         "link": "https://www.google.com/search?ibp=oshop&q=Vans Infuse Snowboard Boot&prds=productid:12877828997331964402,headlineOfferDocid:12877828997331964402,imageDocid:4784974385923499054,rds:PC_11041271152116621962|PROD_PC_11041271152116621962,pvt:hg&hl=en&gl=us&udm=28",
         "thumbnail": "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcT-HgO_lyXP9wF7EHuH_UjNFKCBwp7DEEmgFz67b6DFfmOmCPN4QWS-UuAh1SIs8zfJaTKhWHr0mXpL1q8MYhXhk-pU9dtWysryRZOw-3AqJHLY8NCK3GrpmQ",
-        "delivery": null,
-        "tag": null
+        "delivery": None,
+        "tag": None
     },
     {
         "title": "Snowboard Boots Vans Invado Pro",
@@ -407,13 +407,13 @@
         "store": "evo.com",
         "price": "$199.99",
         "extracted_price": 199.99,
-        "old_price": null,
+        "old_price": None,
         "rating": 4.7,
         "reviews": 107,
         "link": "https://www.google.com/search?ibp=oshop&q=Vans Infuse Snowboard Boot&prds=catalogid:12729040189163727931,productid:6038274224314639415,headlineOfferDocid:3942594649755721556,imageDocid:11948324554505225093,rds:PC_7865088842573692446|PROD_PC_7865088842573692446,gpcid:7865088842573692446,pvt:hg&hl=en&gl=us&udm=28",
         "thumbnail": "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcTh7r2JX9HobaL5bEs0feuneNA-OjNwUXKP3OKBHW19ihgOQuMBaMf4xC8_HHYd4ci6r8qsPaQzQHMIrPNLqnhyXm4t0B_2ekYycZbtxTrCAgfJQpvB_hVAMA",
         "delivery": "Free delivery",
-        "tag": null
+        "tag": None
     },
     {
         "title": "Vans 2026 Infuse Snowsurf Snowboard Boots - Black 13 by Directive Boardshop",
@@ -425,7 +425,7 @@
         "reviews": 7,
         "link": "https://www.google.com/search?ibp=oshop&q=Vans Infuse Snowboard Boot&prds=productid:13831976805279538694,headlineOfferDocid:13831976805279538694,imageDocid:10058058083265293678,rds:PC_6703268009331937025|PROD_PC_6703268009331937025,pvt:hg&hl=en&gl=us&udm=28",
         "thumbnail": "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcTpbS86U1oDcdnbBpUXOuizeDBmi4bzsfs1CWq6ZN9-mHOMxddkp5Lnfu9XKO-Fj_-mx0eer3TK4UCKw3XAD4fzMT00u1t7q-TpwmwfKvQjdPBg6EvmK2pUww",
-        "delivery": null,
+        "delivery": None,
         "tag": "41% OFF"
     },
     {
@@ -438,7 +438,7 @@
         "reviews": 5,
         "link": "https://www.google.com/search?ibp=oshop&q=Vans Infuse Snowboard Boot&prds=catalogid:16259234360065714483,productid:3775927822302433797,headlineOfferDocid:13116301649739749794,imageDocid:4000687563525205624,rds:PC_17531365919677699030|PROD_PC_17531365919677699030,gpcid:17531365919677699030,mid:576462822524681142,pvt:hg&hl=en&gl=us&udm=28",
         "thumbnail": "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcRbruYvnA-dcVWzZJRDEBUJ8W480HXQDarJedBjt6Tnuy28lFHA7XKINfdtGRJVUdXT0mt-CuwH7MoER8iQIAOi0jmylePFVg",
-        "delivery": null,
+        "delivery": None,
         "tag": "LOW PRICE"
     },
     {
@@ -472,13 +472,13 @@
         "store": "Milosport",
         "price": "$389.99",
         "extracted_price": 389.99,
-        "old_price": null,
-        "rating": null,
-        "reviews": null,
+        "old_price": None,
+        "rating": None,
+        "reviews": None,
         "link": "https://www.google.com/search?ibp=oshop&q=Vans Infuse Snowboard Boot&prds=catalogid:14093251151602874893,productid:15193274279102532112,headlineOfferDocid:6650758200338178354,imageDocid:4897450406892653178,gpcid:12653967450448647826,mid:576462550324659507,pvt:hg&hl=en&gl=us&udm=28",
         "thumbnail": "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcTbVdSfe8P66Mqas4mP8Njw1XNeyfO5pQO2_vk4IGfAkPhZeVIF7YfSM7H46F5qHgqeQiNwL0kMzC2rh-8n3rKj8B44xh9V5w",
         "delivery": "Free delivery",
-        "tag": null
+        "tag": None
     },
     {
         "title": "Vans Men's Verse Snowboard Boots",
@@ -499,8 +499,8 @@
         "price": "$169.95",
         "extracted_price": 169.95,
         "old_price": "$235",
-        "rating": null,
-        "reviews": null,
+        "rating": None,
+        "reviews": None,
         "link": "https://www.google.com/search?ibp=oshop&q=Vans Infuse Snowboard Boot&prds=productid:43739102490654713,headlineOfferDocid:43739102490654713,imageDocid:6063226453303121106,pvt:hg&hl=en&gl=us&udm=28",
         "thumbnail": "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcQP4FBkpAOGNUb4iA4YDpvYthGSIpNpGOnmIqn5d5MCERLDo8w9m99EEylBAZ_lyxNo5q2L68do148R1-tugJ2P5llM7WtSM8ZaarEh5BMiy_UliQRKpzoT",
         "delivery": "Free delivery",
@@ -511,12 +511,12 @@
         "store": "Elevation Skate Snow",
         "price": "$235.00",
         "extracted_price": 235.0,
-        "old_price": null,
+        "old_price": None,
         "rating": 4.4,
         "reviews": 85,
         "link": "https://www.google.com/search?ibp=oshop&q=Vans Infuse Snowboard Boot&prds=productid:6250832637080418343,headlineOfferDocid:6250832637080418343,imageDocid:15659217271121762685,rds:PC_16013356465330596658|PROD_PC_16013356465330596658,pvt:hg&hl=en&gl=us&udm=28",
         "thumbnail": "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcT7jZ6h935vOOWj3MiDtMbZwlpqZ8oIwlK918vMIhI7Ozg-ajs7g38HiDbqQos_Bg0eiR2msII19L312BENnh9q4jGAiBqtgfyXNPbny46u",
-        "delivery": null,
-        "tag": null
+        "delivery": None,
+        "tag": None
     }
 ]

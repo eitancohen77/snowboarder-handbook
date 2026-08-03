@@ -5,6 +5,7 @@ import requests
 import os
 from dotenv import load_dotenv
 from pathlib import Path
+from parsedmockdata import mockdata
 
 
 
@@ -54,13 +55,12 @@ def search_google_shopping(query: str, location: str):
     
 
 @app.get("/products")
-def get_products():
-    parsed_data = "HELLO THERE"
+def get_products(q: str, location: str = None):
 
-    data = search_google_shopping("Vans Infuse Snowboard Boot", "New York")
+    data = search_google_shopping(q, location)
     parsed_data = parse_shopping_results(data)
 
-    return parsed_data
+    return {"results": parsed_data}
 
 
 app.mount("/", StaticFiles(directory=BASE_DIR / "static", html=True), name="static")
