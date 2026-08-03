@@ -1,11 +1,23 @@
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 import requests
 import os
 from dotenv import load_dotenv
 from pathlib import Path
 
 
+
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+BASE_DIR = Path(__file__).resolve().parent
 load_dotenv(dotenv_path=Path(__file__).parent / ".env")
 
 serpapi_key = os.getenv("SERPAPI")
@@ -43,7 +55,7 @@ def search_google_shopping(query: str, location: str):
 
 @app.get("/products")
 def get_products():
-    data = "HELLO THERE"
+    parsed_data = "HELLO THERE"
 
     data = search_google_shopping("Vans Infuse Snowboard Boot", "New York")
     parsed_data = parse_shopping_results(data)
@@ -51,8 +63,4 @@ def get_products():
     return parsed_data
 
 
-@app.get("/")
-def home():
-    return {
-        "message": "Snowboard API running"
-    }
+app.mount("/", StaticFiles(directory=BASE_DIR / "static", html=True), name="static")
