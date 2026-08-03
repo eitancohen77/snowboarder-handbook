@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>US Ski Resorts Map</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+<style>
+  :root {
+    --ink: #2b2621;
+    --muted: #6b6255;
+    --card-bg: #fdfbf6;
+    --card-line: #d8cfbf;
+    --flag-orange: #d9622b;
+    --dot: #003c6d;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: #16202c;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    color: var(--ink);
+  }
+
+  header {
+    text-align: center;
+    padding: 20px 16px 14px;
+  }
+
+  header .eyebrow {
+    color: var(--flag-orange);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  header h1 {
+    font-size: 26px;
+    margin: 6px 0 0;
+    font-weight: 700;
+    color: white;
+  }
+
+  header p {
+    color: var(--muted);
+    font-size: 13px;
+    margin: 6px 0 0;
+    color: rgba(255, 255, 255, 0.541)
+  }
+
+  #map {
+    width: 100%;
+    height: 82vh;
+    min-height: 500px;
+    background: #eae4d3;
+  }
+
+  /* Visible dot: small, purely decorative */
+  .resort-dot-visual {
+    fill: var(--dot);
+    stroke: #000000;
+    stroke-width: 1.5;
+    pointer-events: none;
+    transition: fill 0.12s ease;
+  }
+
+  /* Invisible larger circle underneath that actually catches the hover/click */
+  .resort-dot-hit {
+    fill: #000;
+    fill-opacity: 0;
+    stroke: none;
+    cursor: pointer;
+  }
+
+  /* Hover card that appears under the circle */
+  .resort-hover-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-line);
+    border-radius: 10px;
+    padding: 10px 12px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+    font-family: inherit;
+    min-width: 160px;
+  }
+  .resort-hover-card .name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 2px;
+  }
+  .resort-hover-card .state {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .resort-hover-card a {
+    display: inline-block;
+    background: var(--flag-orange);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    padding: 5px 10px;
+    border-radius: 6px;
+  }
+  .resort-hover-card a:hover {
+    filter: brightness(1.08);
+  }
+
+  .leaflet-popup-content-wrapper {
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+  }
+  .leaflet-popup-tip {
+    display: none;
+  }
+  .leaflet-popup-content {
+    margin: 0;
+  }
+  .leaflet-popup-close-button {
+    display: none;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Trail Map</div>
+  <h1>US Ski Resorts</h1>
+  <p>Hover a dot for details &middot; click to open the resort's site</p>
+</header>
+
+<div id="map"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+  const RESORTS = [{"name":"49 Degree North Ski Area","state":"Washington","lat":48.30156,"lon":-117.56302,"website":"https://www.ski49n.com"},{"name":"Abenaki Ski Area","state":"New Hampshire","lat":43.61062,"lon":-71.23027,"website":"https://www.wolfeboronh.us/abenaki-ski-area"},{"name":"Afton Alps Ski Area","state":"Minnesota","lat":44.85838,"lon":-92.78781,"website":"https://www.aftonalps.com"},{"name":"Alpine Valley Resort","state":"Wisconsin","lat":42.7365,"lon":-88.42814,"website":"https://www.alpinevalleyresort.com"},{"name":"Alpine Valley Ski Area","state":"Michigan","lat":42.65365,"lon":-83.523,"website":"https://www.skialpinevalley.com"},{"name":"Alpine Valley Ski Area","state":"Ohio","lat":41.5275,"lon":-81.25987,"website":"https://www.alpinevalleyohio.com"},{"name":"Alta Sierra Ski Resort & Terrain Park","state":"California","lat":35.712,"lon":-118.56029,"website":"https://www.altasierra.com"},{"name":"Alta Ski Area","state":"Utah","lat":40.58861,"lon":-111.6386,"website":"https://www.alta.com"},{"name":"Alyeska Resort","state":"Alaska","lat":60.97091,"lon":-149.09864,"website":"https://www.alyeskaresort.com"},{"name":"Andes Tower Hills, Inc.","state":"Minnesota","lat":45.85162,"lon":-95.6305,"website":"https://www.andestowerhills.com"},{"name":"Angel Fire Resort","state":"New Mexico","lat":36.38764,"lon":-105.27203,"website":"https://www.angelfireresort.com"},{"name":"Anthony Lakes","state":"Oregon","lat":44.96321,"lon":-118.23356,"website":"https://www.anthonylakes.com"},{"name":"Appalachian Ski Mtn.","state":"North Carolina","lat":36.17308,"lon":-81.66395,"website":"https://www.appskimtn.com"},{"name":"Arapahoe Basin Ski Area","state":"Colorado","lat":39.64342,"lon":-105.87198,"website":"https://www.arapahoebasin.com"},{"name":"Arctic Valley Ski Area","state":"Alaska","lat":61.24694,"lon":-149.53292,"website":"https://arcticvalley.org"},{"name":"Arizona Snowbowl","state":"Arizona","lat":35.33146,"lon":-111.70597,"website":"https://www.snowbowl.ski"},{"name":"Arrowhead Recreation Area","state":"New Hampshire","lat":43.36395,"lon":-72.33322,"website":"https://www.arrowheadnh.com"},{"name":"Aspen Highlands","state":"Colorado","lat":39.18252,"lon":-106.85633,"website":"https://www.aspensnowmass.com"},{"name":"Aspen Mountain","state":"Colorado","lat":39.18704,"lon":-106.81825,"website":"https://www.aspensnowmass.com"},{"name":"Attitash Mountain Resort","state":"New Hampshire","lat":44.08346,"lon":-71.22946,"website":"https://www.attitash.com"},{"name":"Ausblick Ski Area","state":"Wisconsin","lat":43.13527,"lon":-88.26427,"website":"https://www.ausblick.org"},{"name":"Bear Creek Mountain Resort","state":"Pennsylvania","lat":40.4771,"lon":-75.62558,"website":"https://www.bcmountainresort.com"},{"name":"Bear Mountain Resort","state":"California","lat":34.23717,"lon":-116.88949,"website":"https://www.bigbearmountainresort.com"},{"name":"Bear Valley Mountain","state":"California","lat":38.49343,"lon":-120.04414,"website":"https://www.bearvalley.com"},{"name":"Beaver Creek Resort","state":"Colorado","lat":39.60493,"lon":-106.51669,"website":"https://www.beavercreek.com"},{"name":"Beaver Mountain Ski Area","state":"Utah","lat":41.96876,"lon":-111.54414,"website":"https://www.skithebeav.com"},{"name":"Beech Mountain Resort","state":"North Carolina","lat":36.19539,"lon":-81.87803,"website":"https://www.beechmountainresort.com"},{"name":"Belleayre Mountain","state":"New York","lat":42.13603,"lon":-74.51002,"website":"https://www.belleayre.com"},{"name":"Berkshire East Mountain Resort","state":"Massachusetts","lat":42.62189,"lon":-72.87705,"website":"https://www.berkshireeast.com"},{"name":"Big Boulder Ski Area","state":"Pennsylvania","lat":41.05076,"lon":-75.60098,"website":"https://www.jfbb.com"},{"name":"Big Powderhorn Mountain Resort","state":"Michigan","lat":46.50991,"lon":-90.09616,"website":"https://www.bigpowderhorn.net"},{"name":"Big Rock Mountain","state":"Maine","lat":46.52313,"lon":-67.82886,"website":"https://www.bigrockmaine.com"},{"name":"Big Sky Resort","state":"Montana","lat":45.28638,"lon":-111.40116,"website":"https://www.bigskyresort.com"},{"name":"Big Snow Resort","state":"Michigan","lat":46.50613,"lon":-89.99758,"website":"https://www.bigsnow.com"},{"name":"Black Mountain of Maine","state":"Maine","lat":44.57754,"lon":-70.61318,"website":"https://skiblackmountain.org"},{"name":"Black Mountain Ski Area","state":"New Hampshire","lat":44.16719,"lon":-71.16363,"website":"https://www.blackmt.com"},{"name":"Blacktail Mountain Ski Area","state":"Montana","lat":48.01545,"lon":-114.36946,"website":"https://www.blacktailmountain.com"},{"name":"Blue Knob","state":"Pennsylvania","lat":40.29752,"lon":-78.54366,"website":"https://www.blueknob.com"},{"name":"Blue Mountain Resort","state":"Pennsylvania","lat":40.81143,"lon":-75.52086,"website":"https://www.skibluemt.com"},{"name":"Bluebird Backcountry","state":"Colorado","lat":40.39977,"lon":-106.54913,"website":"https://www.bluebirdbackcountry.com"},{"name":"Bluewood Ski Area","state":"Washington","lat":46.08319,"lon":-117.85091,"website":"https://www.bluewood.com"},{"name":"Bogus Basin Mountain Recreation Area","state":"Idaho","lat":43.64321,"lon":-116.20599,"website":"https://www.bogusbasin.org"},{"name":"Bolton Valley Resort","state":"Vermont","lat":44.42295,"lon":-72.85121,"website":"https://www.boltonvalley.com"},{"name":"Boreal Mountain Resort","state":"California","lat":39.33669,"lon":-120.35054,"website":"https://www.rideboreal.com"},{"name":"Boston Mills/Brandywine Ski Resort","state":"Ohio","lat":41.2656,"lon":-81.56316,"website":"https://www.bmbw.com"},{"name":"Bousquet Ski Area","state":"Massachusetts","lat":42.41971,"lon":-73.27658,"website":"https://www.bousquetmountain.com"},{"name":"Boyce Park Ski & Tubing Area","state":"Pennsylvania","lat":40.4626,"lon":-79.74752,"website":"https://www.alleghenycounty.us/parks"},{"name":"Boyne Highlands Resort","state":"Michigan","lat":45.46543,"lon":-84.92656,"website":"https://www.boynehighlands.com"},{"name":"Boyne Mountain Resort","state":"Michigan","lat":45.16394,"lon":-84.93002,"website":"https://www.boynemountain.com"},{"name":"Bradford Ski Area","state":"Massachusetts","lat":42.74544,"lon":-71.05579,"website":"https://www.skibradford.com"},{"name":"Breckenridge Ski Resort","state":"Colorado","lat":39.48355,"lon":-106.06821,"website":"https://www.breckenridge.com"},{"name":"Bretton Woods Ski Area","state":"New Hampshire","lat":44.25986,"lon":-71.46009,"website":"https://www.brettonwoods.com"},{"name":"Brian Head Resort","state":"Utah","lat":37.70308,"lon":-112.84978,"website":"https://www.brianhead.com"},{"name":"Bridger Bowl Ski Area","state":"Montana","lat":45.818,"lon":-110.89668,"website":"https://www.bridgerbowl.com"},{"name":"Brighton Ski Resort","state":"Utah","lat":40.59916,"lon":-111.5828,"website":"https://www.brightonresort.com"},{"name":"Bristol Mountain Resort","state":"New York","lat":42.74606,"lon":-77.40407,"website":"https://www.bristolmountain.com"},{"name":"Bromley Mountain Resort","state":"Vermont","lat":43.21368,"lon":-72.93482,"website":"https://www.bromley.com"},{"name":"Brundage Mountain Resort","state":"Idaho","lat":45.00605,"lon":-116.15456,"website":"https://www.brundage.com"},{"name":"Bryce Resort","state":"Virginia","lat":38.81827,"lon":-78.76567,"website":"https://www.bryceresort.com"},{"name":"Buck Hill Ski & Snowboard Area","state":"Minnesota","lat":44.72518,"lon":-93.28399,"website":"https://www.buckhill.com"},{"name":"Buena Vista Ski Area","state":"Minnesota","lat":47.6589,"lon":-94.8788,"website":"https://www.bvskiarea.com"},{"name":"Burke Mountain Resort LLC","state":"Vermont","lat":44.58849,"lon":-71.91344,"website":"https://www.skiburke.com"},{"name":"Buttermilk","state":"Colorado","lat":39.20645,"lon":-106.86115,"website":"https://www.aspensnowmass.com"},{"name":"Caberfae Peaks","state":"Michigan","lat":44.24522,"lon":-85.72042,"website":"https://www.caberfaepeaks.com"},{"name":"Camden Snow Bowl","state":"Maine","lat":44.21796,"lon":-69.13478,"website":"https://www.camdensnowbowl.com"},{"name":"Camelback Resort","state":"Pennsylvania","lat":41.05198,"lon":-75.35467,"website":"https://www.skicamelback.com"},{"name":"Camp 10 Ski Area","state":"Wisconsin","lat":45.55093,"lon":-89.49909,"website":"https://www.camp10skiandsnowboard.com"},{"name":"Campton Mountain","state":"New Hampshire","lat":43.86886,"lon":-71.6094,"website":"https://www.camptonmountain.com"},{"name":"Canaan Valley Resort","state":"West Virginia","lat":39.00917,"lon":-79.43867,"website":"https://www.canaanresort.com"},{"name":"Cannon Mountain","state":"New Hampshire","lat":44.17801,"lon":-71.70187,"website":"https://www.cannonmt.com"},{"name":"Cannonsburg Ski Area","state":"Michigan","lat":43.05538,"lon":-85.50187,"website":"https://www.cannonsburg.com"},{"name":"Cascade Mountain","state":"Wisconsin","lat":43.50436,"lon":-89.51732,"website":"https://www.cascademountain.com"},{"name":"Cataloochee Ski Area","state":"North Carolina","lat":35.56312,"lon":-83.08986,"website":"https://www.cataloochee.com"},{"name":"Catamount Mountain Resort","state":"New York","lat":42.16975,"lon":-73.47675,"website":"https://www.catamountski.com"},{"name":"Cherry Peak Resort","state":"Utah","lat":41.927,"lon":-111.75638,"website":"https://www.skicpr.com"},{"name":"Chester Bowl","state":"Minnesota","lat":46.81387,"lon":-92.09589,"website":"https://www.chesterbowl.org"},{"name":"Chestnut Mountain Resort","state":"Illinois","lat":42.31976,"lon":-90.39377,"website":"https://www.chestnutmtn.com"},{"name":"China Peak Mountain Resort","state":"California","lat":37.2372,"lon":-119.15735,"website":"https://www.skichinapeak.com"},{"name":"Christie Mountain Snow Area","state":"Wisconsin","lat":45.50977,"lon":-91.3808,"website":"https://www.christiemountain.com"},{"name":"Cloudmont Ski","state":"Alabama","lat":34.53576,"lon":-85.60321,"website":"https://www.cloudmont.com"},{"name":"Cochrans Ski Area","state":"Vermont","lat":44.39581,"lon":-72.98171,"website":"https://www.cochranskiarea.com"},{"name":"Cockaigne Resort LLC","state":"New York","lat":42.2646,"lon":-79.16213,"website":"https://www.cockaigne.com"},{"name":"Cooper Spur Mountain Resort","state":"Oregon","lat":45.42587,"lon":-121.59039,"website":"https://www.cooperspur.com"},{"name":"Copper Mountain Resort","state":"Colorado","lat":39.50648,"lon":-106.14108,"website":"https://www.coppercolorado.com"},{"name":"Cranmore Mountain Resort","state":"New Hampshire","lat":44.05705,"lon":-71.10997,"website":"https://www.cranmore.com"},{"name":"Crested Butte Mountain Resort","state":"Colorado","lat":38.89972,"lon":-106.9657,"website":"https://www.skicb.com"},{"name":"Crotched Mountain Ski & Ride","state":"New Hampshire","lat":43.01288,"lon":-71.87859,"website":"https://www.crotchedmtn.com"},{"name":"Crystal Mountain","state":"Michigan","lat":44.52064,"lon":-85.9923,"website":"https://www.crystalmountain.com"},{"name":"Crystal Mountain Resort","state":"Washington","lat":46.92931,"lon":-121.50462,"website":"https://www.crystalmountainresort.com"},{"name":"Dartmouth Skiway","state":"New Hampshire","lat":43.78838,"lon":-72.09952,"website":"https://www.dartmouthskiway.com"},{"name":"Deer Mountain Ski Resort","state":"South Dakota","lat":44.30903,"lon":-103.81839,"website":"https://www.facebook.com/Deer-Mountain-Ski-Resort-"},{"name":"Deer Valley Resort","state":"Utah","lat":40.63802,"lon":-111.47833,"website":"https://www.deervalley.com"},{"name":"Detroit Mountain Recreation Area","state":"Minnesota","lat":46.81325,"lon":-95.78326,"website":"https://www.detroitmountain.com"},{"name":"Devil's Head Resort & Convention Center","state":"Wisconsin","lat":43.41855,"lon":-89.62696,"website":"https://www.devilsheadresort.com"},{"name":"Diamond Peak Ski Resort","state":"Nevada","lat":39.25436,"lon":-119.92362,"website":"https://www.diamondpeak.com"},{"name":"Discovery Ski Area","state":"Montana","lat":46.25018,"lon":-113.23717,"website":"https://www.skidiscovery.com"},{"name":"DNC Parks & Resorts at Yosemite, Inc.","state":"California","lat":37.66533,"lon":-119.66291,"website":"https://www.yosemitepark.com"},{"name":"Dodge Ridge Ski Area","state":"California","lat":38.1906,"lon":-119.95576,"website":"https://www.dodgeridge.com"},{"name":"Donner Ski Ranch","state":"California","lat":39.31836,"lon":-120.33022,"website":"https://www.donnerskiranch.com"},{"name":"Double H Ranch","state":"New York","lat":43.37505,"lon":-73.7907,"website":"https://www.doublehranch.org"},{"name":"Eagle Point Resort","state":"Utah","lat":38.32101,"lon":-112.38383,"website":"https://www.eaglepointresort.com"},{"name":"Eagle Rock Ski Area","state":"Pennsylvania","lat":40.92087,"lon":-76.09701,"website":"https://www.eaglerockresort.com"},{"name":"Eaglebrook School","state":"Massachusetts","lat":42.54315,"lon":-72.59191,"website":"https://www.eaglebrook.org"},{"name":"Eaglecrest Ski Area","state":"Alaska","lat":58.27499,"lon":-134.51262,"website":"https://www.skieaglecrest.com"},{"name":"Eastman Cross Country","state":"New Hampshire","lat":43.51582,"lon":-72.11298,"website":"https://www.eastmannh.org/ski"},{"name":"Echo Mountain","state":"Colorado","lat":39.68516,"lon":-105.51937,"website":"https://www.echomntn.com"},{"name":"Eldora Mountain Resort","state":"Colorado","lat":39.93783,"lon":-105.58279,"website":"https://www.eldora.com"},{"name":"Elk Mountain Ski Resort, Inc.","state":"Pennsylvania","lat":41.72406,"lon":-75.55345,"website":"https://www.elkskier.com"},{"name":"Elk Ridge Ski & Outdoor Recreation Area","state":"Arizona","lat":35.21597,"lon":-112.19263,"website":"https://www.elkridgeski.com"},{"name":"Four Seasons Golf and Ski Center","state":"New York","lat":43.03556,"lon":-75.97194,"website":"https://www.fourseasonsgolfandski.com"},{"name":"Frisco Adventure Park","state":"Colorado","lat":39.57535,"lon":-106.07768,"website":"https://www.townoffrisco.com"},{"name":"Frost Fire Park","state":"North Dakota","lat":48.91268,"lon":-98.06863,"website":"https://www.frostfireskiarea.com"},{"name":"Gateway Hills Snow Park","state":"New Hampshire","lat":42.71529,"lon":-71.45258,"website":"https://www.gatewayhillssnowpark.com"},{"name":"Giants Ridge","state":"Minnesota","lat":47.57711,"lon":-92.30323,"website":"https://www.giantsridge.com"},{"name":"Gore Mountain","state":"New York","lat":43.67391,"lon":-74.00674,"website":"https://www.goremountain.com"},{"name":"Granby Ranch","state":"Colorado","lat":40.04526,"lon":-105.90657,"website":"https://granbyranch.com/"},{"name":"Grand Geneva Resort","state":"Wisconsin","lat":42.61031,"lon":-88.40505,"website":"https://www.grandgeneva.com"},{"name":"Grand Targhee Resort","state":"Wyoming","lat":43.78953,"lon":-110.9577,"website":"https://www.grandtarghee.com"},{"name":"Granite Gorge Ski Area","state":"New Hampshire","lat":42.97168,"lon":-72.21202,"website":"https://www.granitegorge.com"},{"name":"Granite Peak at Rib Mountain State Park","state":"Wisconsin","lat":44.92989,"lon":-89.68305,"website":"https://www.skigranitepeak.com"},{"name":"Granlibakken Tahoe Ski Area","state":"California","lat":39.15466,"lon":-120.15472,"website":"https://www.granlibakken.com"},{"name":"Great Bear Ski Valley","state":"South Dakota","lat":43.57852,"lon":-96.66444,"website":"https://www.greatbearpark.com"},{"name":"Great Divide Ski Area","state":"Montana","lat":46.75365,"lon":-112.31337,"website":"https://skigd.com"},{"name":"Greek Peak Mountain Resort","state":"New York","lat":42.50888,"lon":-76.14538,"website":"https://www.greekpeakmtnresort.com"},{"name":"Gunstock Mountain Resort","state":"New Hampshire","lat":43.54172,"lon":-71.36282,"website":"https://www.gunstock.com"},{"name":"Hatcher Alpine Xperience dba Skeetawk Ski Area","state":"Alaska","lat":61.74358,"lon":-149.23388,"website":"https://www.skeetawk.com"},{"name":"Hawksnest Snow Tubing","state":"North Carolina","lat":36.14377,"lon":-81.82621,"website":"https://hawksnesttubing.com"},{"name":"Heavenly Mountain Resort","state":"Nevada","lat":38.9618,"lon":-119.88563,"website":"https://www.skiheavenly.com"},{"name":"Heiliger Huegel Ski Club","state":"Wisconsin","lat":43.25282,"lon":-88.31111,"website":"https://www.hhskiclub.com"},{"name":"Hickory Hills","state":"Michigan","lat":44.76938,"lon":-85.66617,"website":"https://www.ci.traverse-"},{"name":"Hidden Valley Resort","state":"Pennsylvania","lat":40.05874,"lon":-79.25806,"website":"https://www.hiddenvalleyresort.com"},{"name":"Hidden Valley Ski Area","state":"Missouri","lat":38.53597,"lon":-90.65058,"website":"https://www.hiddenvalleyski.com"},{"name":"Hillberg Ski Area","state":"Alaska","lat":61.27681,"lon":-149.82451,"website":"https://jberlife.com/hillberg"},{"name":"Hilltop Ski Area","state":"Alaska","lat":61.14121,"lon":-149.74507,"website":"https://www.hilltopskiarea.org"},{"name":"Hogadon Basin Ski Area","state":"Wyoming","lat":42.7459,"lon":-106.33893,"website":"http://hogadon.net/"},{"name":"Holiday Mountain Ski Area","state":"New York","lat":41.63026,"lon":-74.61486,"website":"https://www.holidaymtn.com"},{"name":"Holiday Valley Resort","state":"New York","lat":42.26382,"lon":-78.66735,"website":"https://www.holidayvalley.com"},{"name":"HoliMont Ski Area","state":"New York","lat":42.27399,"lon":-78.68896,"website":"https://www.holimont.com"},{"name":"Homewood Mountain Resort","state":"California","lat":39.08627,"lon":-120.16039,"website":"https://www.skihomewood.com"},{"name":"Hoodoo Ski Area","state":"Oregon","lat":44.40924,"lon":-121.87139,"website":"https://www.hoodoo.com"},{"name":"Howelsen Hill Ski Area","state":"Colorado","lat":40.48397,"lon":-106.83769,"website":"https://www.steamboatsprings.net/ski"},{"name":"Huff Hills Ski Area","state":"North Dakota","lat":46.628,"lon":-100.72319,"website":"https://www.huffhills.com"},{"name":"Hunter Mountain","state":"New York","lat":42.20353,"lon":-74.22458,"website":"https://www.huntermtn.com"},{"name":"Hurricane Ridge Ski Area","state":"Washington","lat":47.9706,"lon":-123.49516,"website":"https://www.hurricaneridge.com"},{"name":"Hyland Hills Ski Area","state":"Minnesota","lat":44.84416,"lon":-93.36363,"website":"https://www.hylandski.com"},{"name":"Jack Frost Mountain","state":"Pennsylvania","lat":41.1014,"lon":-75.65014,"website":"https://www.jfbb.com"},{"name":"Jackson Hole Mountain Resort","state":"Wyoming","lat":43.58821,"lon":-110.82768,"website":"https://www.jacksonhole.com"},{"name":"Jay Peak Resort","state":"Vermont","lat":44.93807,"lon":-72.50402,"website":"https://www.jaypeakresort.com"},{"name":"Jiminy Peak Mountain Resort","state":"Massachusetts","lat":42.55588,"lon":-73.29214,"website":"https://www.jiminypeak.com"},{"name":"June Mountain","state":"California","lat":37.76858,"lon":-119.09061,"website":"https://www.junemountain.com"},{"name":"Keystone Resort","state":"Colorado","lat":39.60824,"lon":-105.9437,"website":"https://www.keystoneresort.com"},{"name":"Killington Resort","state":"Vermont","lat":43.62645,"lon":-72.79675,"website":"https://www.killington.com"},{"name":"King Pine Ski Area","state":"New Hampshire","lat":43.86878,"lon":-71.08879,"website":"https://www.kingpine.com"},{"name":"Kingvale Snow Schoolers","state":"California","lat":39.31247,"lon":-120.44656,"website":"http://www.snowschoolers.com/kingvale"},{"name":"Kirkwood Mountain Resort","state":"California","lat":38.68551,"lon":-120.06519,"website":"https://www.kirkwood.com"},{"name":"Kissing Bridge Corp.","state":"New York","lat":42.6,"lon":-78.65244,"website":"https://www.kbski.com"},{"name":"Lake City Ski Hill","state":"Colorado","lat":38.01135,"lon":-107.31166,"website":"https://www.lakecityskihill.com"},{"name":"Laurel Mountain","state":"Pennsylvania","lat":40.16441,"lon":-79.16586,"website":"https://www.laurelmountainski.com"},{"name":"Lee Canyon","state":"Nevada","lat":36.30451,"lon":-115.67957,"website":"https://www.leecanyonlv.com"},{"name":"Liberty Mountain Resort","state":"Pennsylvania","lat":39.76434,"lon":-77.37535,"website":"https://www.libertymountainresort.com"},{"name":"Liberty Mountain Snowflex Centre","state":"Virginia","lat":37.35342,"lon":-79.16674,"website":"https://www.liberty.edu/snowflex"},{"name":"Little Switzerland","state":"Wisconsin","lat":43.33862,"lon":-88.27896,"website":"https://www.littleswitz.com"},{"name":"Lookout Pass Ski & Recreation Area","state":"Idaho","lat":47.45668,"lon":-115.6971,"website":"https://www.skilookout.com"},{"name":"Loon Mountain Recreation Corp.","state":"New Hampshire","lat":44.05698,"lon":-71.6335,"website":"https://www.loonmtn.com"},{"name":"Lost Trail Ski Area, Inc.","state":"Montana","lat":45.69282,"lon":-113.952,"website":"https://www.losttrail.com"},{"name":"Lost Valley Ski Area","state":"Maine","lat":44.13673,"lon":-70.28289,"website":"https://www.lostvalleyski.com"},{"name":"Loup Loup Ski Bowl","state":"Washington","lat":48.39506,"lon":-119.91103,"website":"https://www.skitheloup.com"},{"name":"Loveland Ski Area","state":"Colorado","lat":39.68071,"lon":-105.89797,"website":"https://www.skiloveland.com"},{"name":"Lutsen Mountains","state":"Minnesota","lat":47.66425,"lon":-90.71349,"website":"https://www.lutsen.com"},{"name":"Mad River Glen","state":"Vermont","lat":44.20296,"lon":-72.91735,"website":"https://www.madriverglen.com"},{"name":"Mad River Mountain","state":"Ohio","lat":40.31866,"lon":-83.67767,"website":"https://www.skimadriver.com"},{"name":"Magic Mountain","state":"Vermont","lat":43.20249,"lon":-72.77224,"website":"https://www.magicmtn.com"},{"name":"Magic Mountain Resort","state":"Idaho","lat":42.19007,"lon":-114.28525,"website":"https://www.magicmountainresort.com"},{"name":"Mammoth Mountain Ski Area","state":"California","lat":37.65183,"lon":-119.0268,"website":"https://www.mammothmountain.com"},{"name":"Maple Ski Ridge","state":"New York","lat":42.81768,"lon":-74.03211,"website":"https://www.mapleskiridge.com"},{"name":"Marquette Mountain","state":"Michigan","lat":46.50887,"lon":-87.42087,"website":"https://marquettemountain.com"},{"name":"Massanutten Resort","state":"Virginia","lat":38.40723,"lon":-78.71602,"website":"https://www.massresort.com"},{"name":"Maverick Mountain Resort","state":"Montana","lat":45.43456,"lon":-113.12834,"website":"https://www.skimaverick.com"},{"name":"McCauley Mtn. Ski Center","state":"New York","lat":43.69893,"lon":-74.96344,"website":"https://www.oldforgeny.com"},{"name":"McIntyre Ski Area","state":"New Hampshire","lat":43.00713,"lon":-71.44185,"website":"https://www.mcintyreskiarea.com"},{"name":"Meadowlark Ski Lodge","state":"Wyoming","lat":44.17457,"lon":-107.21358,"website":"https://www.lodgesofthebighorns.com"},{"name":"Middlebury College Snow Bowl","state":"Vermont","lat":43.93992,"lon":-72.95752,"website":"https://www.middleburysnowbowl.com"},{"name":"Mission Ridge Ski & Board Resort","state":"Washington","lat":47.29306,"lon":-120.39994,"website":"https://www.missionridge.com"},{"name":"Mohawk Mountain Ski Area","state":"Connecticut","lat":41.83885,"lon":-73.31542,"website":"https://www.mohawkmtn.com"},{"name":"Monarch Mountain","state":"Colorado","lat":38.51262,"lon":-106.33195,"website":"https://www.skimonarch.com"},{"name":"Mont Du Lac Resort","state":"Wisconsin","lat":46.65219,"lon":-92.28431,"website":"https://www.mdlresort.com"},{"name":"Mont Ripley Ski Area","state":"Michigan","lat":47.12847,"lon":-88.56007,"website":"https://www.skimontripley.com"},{"name":"Montage Mountain","state":"Pennsylvania","lat":41.35184,"lon":-75.66294,"website":"https://www.montagemountainresorts.com"},{"name":"Montana Snowbowl","state":"Montana","lat":47.01504,"lon":-113.99955,"website":"https://www.montanasnowbowl.com"},{"name":"Mount Bohemia","state":"Michigan","lat":47.38853,"lon":-88.02092,"website":"https://www.mtbohemia.com"},{"name":"Mount Kato Ski Area","state":"Minnesota","lat":44.13376,"lon":-94.03333,"website":"https://www.mountkato.com"},{"name":"Mount Peter","state":"New York","lat":41.243,"lon":-74.29058,"website":"https://www.mtpeter.com"},{"name":"Mount Pleasant of Edinboro","state":"Pennsylvania","lat":41.85158,"lon":-80.07035,"website":"https://www.skimountpleasant.com"},{"name":"Mount Snow Resort","state":"Vermont","lat":42.96869,"lon":-72.89452,"website":"https://www.mountsnow.com"},{"name":"Mount Southington Ski Area","state":"Connecticut","lat":41.58296,"lon":-72.92465,"website":"https://www.mountsouthington.com"},{"name":"Mount Sunapee Resort","state":"New Hampshire","lat":43.33253,"lon":-72.08003,"website":"https://www.mountsunapee.com"},{"name":"Mountain Creek Resort","state":"New Jersey","lat":41.19092,"lon":-74.50526,"website":"https://www.mountaincreek.com"},{"name":"Mountain High Resort","state":"California","lat":34.37763,"lon":-117.69142,"website":"https://www.mthigh.com"},{"name":"Mt. Abram Ski Area","state":"Maine","lat":44.38043,"lon":-70.7068,"website":"https://www.mtabram.com"},{"name":"Mt. Ashland","state":"Oregon","lat":42.08234,"lon":-122.70478,"website":"https://www.mtashland.com"},{"name":"Mt. Bachelor LLC","state":"Oregon","lat":44.00303,"lon":-121.67906,"website":"https://www.mtbachelor.com"},{"name":"Mt. Baker Ski Area","state":"Washington","lat":48.85787,"lon":-121.6666,"website":"https://www.mtbaker.us"},{"name":"Mt. Baldy Ski Lifts","state":"California","lat":34.27081,"lon":-117.62185,"website":"https://www.mtbaldyresort.com"},{"name":"Mt. Brighton Ski Area","state":"Michigan","lat":42.54141,"lon":-83.81159,"website":"https://www.mtbrighton.com"},{"name":"Mt. Crescent Ski Area","state":"Iowa","lat":41.39551,"lon":-95.86061,"website":"https://www.skicrescent.com"},{"name":"Mt. Eyak Ski Area","state":"Alaska","lat":60.55043,"lon":-145.74997,"website":"https://www.mteyak.org"},{"name":"Mt. Holiday","state":"Michigan","lat":44.74212,"lon":-85.51455,"website":"https://www.mt-holiday.com"},{"name":"Mt. Hood Meadows","state":"Oregon","lat":45.3324,"lon":-121.66516,"website":"https://www.skihood.com"},{"name":"Mt. Hood Skibowl","state":"Oregon","lat":45.30315,"lon":-121.77317,"website":"https://www.skibowl.com"},{"name":"Mt. La Crosse","state":"Wisconsin","lat":43.7442,"lon":-91.18257,"website":"https://www.mtlacrosse.com"},{"name":"Mt. Lemmon Ski Valley","state":"Arizona","lat":32.44824,"lon":-110.78156,"website":"https://www.skithelemmon.com"},{"name":"Mt. Rose - Ski Tahoe","state":"Nevada","lat":39.32905,"lon":-119.88535,"website":"https://www.skirose.com"},{"name":"Mt. Shasta Ski Park","state":"California","lat":41.32173,"lon":-122.20357,"website":"https://www.skipark.com"},{"name":"Mt. Ski Gull","state":"Minnesota","lat":46.44817,"lon":-94.37794,"website":"https://www.mountskigull.com"},{"name":"Mt. Spokane Ski & Snowboard Park","state":"Washington","lat":47.92191,"lon":-117.09622,"website":"https://www.mtspokane.com"},{"name":"Nashoba Valley Ski Area","state":"Massachusetts","lat":42.54332,"lon":-71.44502,"website":"https://www.skinashoba.com"},{"name":"Nordic Mountain","state":"Wisconsin","lat":44.12212,"lon":-89.18113,"website":"https://www.nordicmountain.com/"},{"name":"Northstar California","state":"California","lat":39.27528,"lon":-120.12099,"website":"https://www.northstarcalifornia.com"},{"name":"Nub's Nob Ski Area","state":"Michigan","lat":45.47218,"lon":-84.90471,"website":"https://www.nubsnob.com"},{"name":"Oak Mountain","state":"New York","lat":43.51468,"lon":-74.36067,"website":"https://www.oakmountainski.com"},{"name":"Ober Gatlinburg Ski Area","state":"Tennessee","lat":35.70379,"lon":-83.5582,"website":"https://www.obergatlinburg.com"},{"name":"Oglebay Resort","state":"West Virginia","lat":40.10102,"lon":-80.66171,"website":"https://www.oglebay-resort.com"},{"name":"Okemo Mountain Resort","state":"Vermont","lat":43.40317,"lon":-72.717,"website":"https://www.okemo.com"},{"name":"Otis Ridge","state":"Massachusetts","lat":42.19695,"lon":-73.09835,"website":"https://www.otisridge.com"},{"name":"Pajarito Mountain Ski Area","state":"New Mexico","lat":35.89572,"lon":-106.39048,"website":"https://www.pajarito.ski"},{"name":"Park City Mountain Resort","state":"Utah","lat":40.65202,"lon":-111.50789,"website":"https://www.parkcitymountain.com"},{"name":"Pats Peak","state":"New Hampshire","lat":43.16465,"lon":-71.79734,"website":"https://www.patspeak.com"},{"name":"Payette Lakes Ski Club","state":"Idaho","lat":44.93036,"lon":-116.16248,"website":"https://www.littleskihill.org"},{"name":"Pebble Creek Ski Area","state":"Idaho","lat":42.77927,"lon":-112.15926,"website":"https://www.pebblecreekskiarea.com"},{"name":"Peek'n Peak Resort","state":"New York","lat":42.06308,"lon":-79.73526,"website":"https://www.pknpk.com"},{"name":"Perfect North Slopes","state":"Indiana","lat":39.14824,"lon":-84.88558,"website":"https://www.perfectnorth.com"},{"name":"Pico Mountain","state":"Vermont","lat":43.66348,"lon":-72.84247,"website":"https://www.picomountain.com"},{"name":"Pine Creek Ski Resort","state":"Wyoming","lat":42.10371,"lon":-110.82882,"website":"https://www.pinecreekskiresort.com"},{"name":"Pine Mountain Ski Resort","state":"Michigan","lat":45.83977,"lon":-88.08867,"website":"https://www.pinemountainresort.com"},{"name":"Pomerelle Mountain Resort","state":"Idaho","lat":42.31867,"lon":-113.60777,"website":"https://www.pomerelle.com"},{"name":"Powder Mountain","state":"Utah","lat":41.38186,"lon":-111.78077,"website":"https://www.powdermountain.com"},{"name":"Powder Ridge Mountain Park & Resort","state":"Connecticut","lat":41.50237,"lon":-72.73643,"website":"https://www.PowderRidgePark.com"},{"name":"Powderhorn Mountain Resort","state":"Colorado","lat":39.07002,"lon":-108.15056,"website":"https://www.powderhorn.com"},{"name":"Purgatory Resort","state":"Colorado","lat":37.63145,"lon":-107.81394,"website":"https://www.purgatoryresort.com"},{"name":"Red Lodge Mountain","state":"Montana","lat":45.19146,"lon":-109.33635,"website":"https://www.redlodgemountain.com"},{"name":"Red River Ski & Summer Area","state":"New Mexico","lat":36.70702,"lon":-105.41282,"website":"https://www.redriverskiarea.com"},{"name":"Roundtop Mountain Resort","state":"Pennsylvania","lat":40.11019,"lon":-76.92753,"website":"https://www.skiroundtop.com"},{"name":"Saddleback Maine","state":"Maine","lat":44.94666,"lon":-70.52727,"website":"https://www.saddlebackmaine.com"},{"name":"Sandia Peak Ski Area","state":"New Mexico","lat":35.20797,"lon":-106.41325,"website":"https://www.sandiapeak.com"},{"name":"Sapphire Valley Ski Area","state":"North Carolina","lat":35.12472,"lon":-83.05871,"website":"https://www.Skisapphirevalley.com"},{"name":"Schweitzer","state":"Idaho","lat":48.3685,"lon":-116.62247,"website":"https://www.schweitzer.com"},{"name":"Seven Springs Mountain Resort","state":"Pennsylvania","lat":40.02368,"lon":-79.2976,"website":"https://www.7springs.com"},{"name":"Shanty Creek Resort","state":"Michigan","lat":44.94028,"lon":-85.13298,"website":"https://www.shantycreek.com"},{"name":"Shawnee Mountain Ski Area","state":"Pennsylvania","lat":41.04057,"lon":-75.0852,"website":"https://www.shawneemt.com"},{"name":"Shawnee Peak Ski Area","state":"Maine","lat":44.05895,"lon":-70.81505,"website":"https://www.shawneepeak.com"},{"name":"Showdown Montana","state":"Montana","lat":46.83896,"lon":-110.70042,"website":"https://www.showdownmontana.com"},{"name":"Sierra-at-Tahoe","state":"California","lat":38.80123,"lon":-120.08055,"website":"https://www.sierraattahoe.com"},{"name":"Silver Mountain Ski Resort","state":"Idaho","lat":47.54134,"lon":-116.13315,"website":"https://www.silvermt.com"},{"name":"Silverton Mountain","state":"Colorado","lat":37.8853,"lon":-107.6659,"website":"https://www.silvertonmountain.com"},{"name":"Sipapu Ski & Summer Resort","state":"New Mexico","lat":36.15487,"lon":-105.54787,"website":"https://www.sipapu.ski"},{"name":"Ski Apache Resort","state":"New Mexico","lat":33.39803,"lon":-105.78874,"website":"https://www.skiapache.com"},{"name":"Ski Brule","state":"Michigan","lat":46.03029,"lon":-88.70121,"website":"https://www.skibrule.com"},{"name":"Ski Butternut","state":"Massachusetts","lat":42.18434,"lon":-73.31985,"website":"https://www.skibutternut.com"},{"name":"Ski Cooper","state":"Colorado","lat":39.36084,"lon":-106.30138,"website":"https://www.skicooper.com"},{"name":"Ski Santa Fe","state":"New Mexico","lat":35.797,"lon":-105.80235,"website":"https://www.skisantafe.com"},{"name":"Ski Sundown","state":"Connecticut","lat":41.88521,"lon":-72.94676,"website":"https://www.skisundown.com"},{"name":"Sleeping Giant Ski Area","state":"Wyoming","lat":44.49349,"lon":-109.93938,"website":"https://www.skisg.com"},{"name":"Smugglers' Notch Resort","state":"Vermont","lat":44.58903,"lon":-72.78993,"website":"https://www.smuggs.com"},{"name":"Snow King Mountain Resort","state":"Wyoming","lat":43.47296,"lon":-110.756,"website":"https://www.snowkingmountain.com"},{"name":"Snowbasin Resort Co.","state":"Utah","lat":41.2168,"lon":-111.85713,"website":"https://www.snowbasin.com"},{"name":"Snowbird","state":"Utah","lat":40.58126,"lon":-111.65687,"website":"https://www.snowbird.com"},{"name":"Snowmass","state":"Colorado","lat":39.21099,"lon":-106.94918,"website":"https://www.aspensnowmass.com"},{"name":"Snowshoe","state":"West Virginia","lat":38.41462,"lon":-79.99738,"website":"https://www.snowshoemtn.com"},{"name":"Soda Springs Ski Area","state":"California","lat":39.32072,"lon":-120.37963,"website":"https://www.skisodasprings.com"},{"name":"Soldier Mountain Ski Area","state":"Idaho","lat":43.48612,"lon":-114.82923,"website":"https://www.soldiermountain.com"},{"name":"Solitude Mountain Ski Area","state":"Utah","lat":40.62045,"lon":-111.59182,"website":"https://www.solitudemountain.com"},{"name":"Spirit Mountain Recreation Area","state":"Minnesota","lat":46.71887,"lon":-92.21672,"website":"https://www.spiritmt.com"},{"name":"Squaw Valley / Alpine Meadows","state":"California","lat":39.19829,"lon":-120.23542,"website":"https://www.squawalpine.com"},{"name":"Steamboat Ski & Resort","state":"Colorado","lat":40.45787,"lon":-106.80445,"website":"https://www.steamboat.com"},{"name":"Stevens Pass","state":"Washington","lat":47.74582,"lon":-121.08872,"website":"https://www.stevenspass.com"},{"name":"Stowe Mountain Resort","state":"Vermont","lat":44.53093,"lon":-72.78143,"website":"https://www.stowe.com"},{"name":"Stratton","state":"Vermont","lat":43.11434,"lon":-72.90552,"website":"https://www.stratton.com"},{"name":"Sugar Bowl Resort","state":"California","lat":39.30174,"lon":-120.33327,"website":"https://www.sugarbowl.com"},{"name":"Sugar Mountain Resort","state":"North Carolina","lat":36.13085,"lon":-81.85872,"website":"https://www.skisugar.com"},{"name":"Sugarbush Resort","state":"Vermont","lat":44.13855,"lon":-72.89416,"website":"https://www.sugarbush.com"},{"name":"Sugarloaf","state":"Maine","lat":45.03311,"lon":-70.31299,"website":"https://www.sugarloaf.com"},{"name":"Sun Valley Resort","state":"Idaho","lat":43.69557,"lon":-114.35426,"website":"https://www.sunvalley.com"},{"name":"Sundance","state":"Utah","lat":40.39476,"lon":-111.58873,"website":"https://www.sundanceresort.com"},{"name":"Sunday River Resort","state":"Maine","lat":44.47408,"lon":-70.85677,"website":"https://www.sundayriver.com"},{"name":"Sunlight Mountain Resort","state":"Colorado","lat":39.40056,"lon":-107.33866,"website":"https://www.sunlightmtn.com"},{"name":"Sunrise Park Resort","state":"Arizona","lat":34.00035,"lon":-109.55378,"website":"https://www.sunriseskiparkaz.com"},{"name":"Tahoe Donner Ski Resort","state":"California","lat":39.35471,"lon":-120.25931,"website":"https://www.skitahoedonner.com"},{"name":"Tamarack Resort","state":"Idaho","lat":44.67068,"lon":-116.12235,"website":"https://www.tamarackidaho.com"},{"name":"Taos Ski Valley, Inc.","state":"New Mexico","lat":36.59544,"lon":-105.45022,"website":"https://www.skitaos.com"},{"name":"Telluride Ski & Golf Resort","state":"Colorado","lat":37.93977,"lon":-107.84826,"website":"https://www.tellurideskiresort.com"},{"name":"Terry Peak Ski Area","state":"South Dakota","lat":44.33523,"lon":-103.84032,"website":"https://www.terrypeak.com"},{"name":"The Homestead","state":"Michigan","lat":44.9142,"lon":-85.96419,"website":"https://www.thehomesteadresort.com"},{"name":"The Summit At Snoqualmie","state":"Washington","lat":47.4254,"lon":-121.41592,"website":"https://www.summitatsnoqualmie.com"},{"name":"Timberline Lodge & Ski Area","state":"Oregon","lat":45.33175,"lon":-121.71146,"website":"https://www.timberlinelodge.com"},{"name":"Timberline Mountain","state":"West Virginia","lat":39.0432,"lon":-79.39905,"website":"https://www.timberlinemountain.com"},{"name":"Treetops Resort","state":"Michigan","lat":45.03373,"lon":-84.58917,"website":"https://www.treetops.com"},{"name":"Utah Olympic Park","state":"Utah","lat":40.71247,"lon":-111.56178,"website":"https://www.utaholympiclegacy.org"},{"name":"Vail Mountain","state":"Colorado","lat":39.60676,"lon":-106.35486,"website":"https://www.vail.com"},{"name":"Wachusett Mountain Ski Area","state":"Massachusetts","lat":42.50359,"lon":-71.88615,"website":"https://www.wachusett.com"},{"name":"Waterville Valley Resort","state":"New Hampshire","lat":43.96651,"lon":-71.52787,"website":"https://www.waterville.com"},{"name":"White Pass Ski Area","state":"Washington","lat":46.6381,"lon":-121.39122,"website":"https://www.skiwhitepass.com"},{"name":"Whiteface Mountain","state":"New York","lat":44.36689,"lon":-73.90269,"website":"https://www.whiteface.com"},{"name":"Whitefish Mountain Resort","state":"Montana","lat":48.48102,"lon":-114.35013,"website":"https://www.skiwhitefish.com"},{"name":"Whitetail Resort","state":"Pennsylvania","lat":39.74247,"lon":-77.93325,"website":"https://www.skiwhitetail.com"},{"name":"Wildcat Mountain","state":"New Hampshire","lat":44.26483,"lon":-71.23963,"website":"https://www.skiwildcat.com"},{"name":"Willamette Pass Resort","state":"Oregon","lat":43.60072,"lon":-122.03656,"website":"https://www.willamettepass.com"},{"name":"Wilmot Mountain","state":"Wisconsin","lat":42.49954,"lon":-88.18747,"website":"https://www.wilmotmountain.com"},{"name":"Windham Mountain","state":"New York","lat":42.29516,"lon":-74.2565,"website":"https://windhammountain.com"},{"name":"Winter Park Resort","state":"Colorado","lat":39.88478,"lon":-105.76272,"website":"https://www.winterparkresort.com"},{"name":"Wintergreen Resort","state":"Virginia","lat":37.91558,"lon":-78.94386,"website":"https://www.wintergreenresort.com"},{"name":"Winterplace Ski Resort","state":"West Virginia","lat":37.59648,"lon":-81.11986,"website":"https://www.winterplace.com"},{"name":"Wisp Resort","state":"Maryland","lat":39.55761,"lon":-79.36325,"website":"https://www.wispresort.com"}];
+
+  const map = L.map('map', {
+    zoomControl: true,
+    minZoom: 4,
+    maxZoom: 13
+  }).setView([39.5, -98.35], 4.3);
+
+  // Natural land-color terrain (greens/browns, no snow-white styling)
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map/MapServer/tile/{z}/{y}/{x}', {
+    attribution: 'Tiles &copy; Esri &mdash; Source: US National Park Service',
+    maxZoom: 8
+  }).addTo(map);
+
+  // Place-name / boundary labels layered on top, dimmed down since they're secondary
+  const labelsLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
+    maxZoom: 13,
+    opacity: 0.35
+  }).addTo(map);
+
+  // Restrict panning/zooming to the US (CONUS + Alaska + Hawaii)
+  const US_BOUNDS = L.latLngBounds([15, -180], [72, -60]);
+  map.setMaxBounds(US_BOUNDS.pad(0.05));
+  map.on('drag', () => map.panInsideBounds(US_BOUNDS, { animate: false }));
+
+  // Timer used to add a tiny grace-period before closing, so moving the
+  // mouse from the dot onto the "Visit site" link doesn't close the card.
+  let closeTimer = null;
+  let currentlyOpen = null; // the hit-target marker whose popup is showing
+
+  RESORTS.forEach(resort => {
+    // Small visible dot (purely decorative, doesn't catch mouse events)
+    L.circleMarker([resort.lat, resort.lon], {
+      radius: 4,
+      className: 'resort-dot-visual',
+      weight: 1.5,
+      interactive: false
+    }).addTo(map);
+
+    // Larger invisible circle on top — this is the actual hover/click target,
+    // much easier to hit than the tiny visible dot.
+    const hitTarget = L.circleMarker([resort.lat, resort.lon], {
+      radius: 14,
+      className: 'resort-dot-hit'
+    }).addTo(map);
+
+    const cardHtml = `
+      <div class="resort-hover-card" data-resort-card>
+        <div class="name">${escapeHtml(resort.name)}</div>
+        <div class="state">${escapeHtml(resort.state)}</div>
+        <a href="${resort.website}" target="_blank" rel="noopener noreferrer">Visit site &rarr;</a>
+      </div>
+    `;
+
+    hitTarget.bindPopup(cardHtml, {
+      closeButton: false,
+      autoClose: false,
+      closeOnClick: false,
+      offset: [0, 10]
+    });
+
+    hitTarget.on('mouseover', function () {
+      clearTimeout(closeTimer);
+      // Only one card visible at a time: close whatever was open, instantly
+      if (currentlyOpen && currentlyOpen !== this) {
+        currentlyOpen.closePopup();
+      }
+      currentlyOpen = this;
+      this.openPopup();
+    });
+    hitTarget.on('mouseout', function () {
+      const marker = this;
+      closeTimer = setTimeout(() => {
+        marker.closePopup();
+        if (currentlyOpen === marker) currentlyOpen = null;
+      }, 150);
+    });
+
+    // Click: go straight to the resort's website
+    hitTarget.on('click', function () {
+      window.open(resort.website, '_blank', 'noopener,noreferrer');
+    });
+  });
+
+  // Keep the card open if the mouse moves onto the card itself
+  // (e.g. to click the "Visit site" link) instead of closing immediately.
+  map.on('popupopen', function (e) {
+    const el = e.popup.getElement();
+    if (!el) return;
+    el.addEventListener('mouseenter', () => clearTimeout(closeTimer));
+    el.addEventListener('mouseleave', () => {
+      closeTimer = setTimeout(() => {
+        map.closePopup(e.popup);
+        currentlyOpen = null;
+      }, 150);
+    });
+  });
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>US Ski Resorts Map</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+<style>
+  :root {
+    --slope-navy: #16202c;
+    --slope-navy-light: #202f40;
+    --ice: #7fd7e8;
+    --snow: #f3f6f8;
+    --flag-orange: #ff6b35;
+    --line: #2c3f52;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--slope-navy);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    color: var(--snow);
+  }
+
+  header {
+    text-align: center;
+    padding: 20px 16px 14px;
+  }
+
+  header .eyebrow {
+    color: var(--ice);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  header h1 {
+    font-size: 26px;
+    margin: 6px 0 0;
+    font-weight: 700;
+  }
+
+  header p {
+    color: #8fa3b5;
+    font-size: 13px;
+    margin: 6px 0 0;
+  }
+
+  #map {
+    width: 100%;
+    height: 82vh;
+    min-height: 500px;
+    background: #0f1720;
+  }
+
+  /* Circle marker styling */
+  .resort-dot {
+    fill: var(--ice);
+    stroke: #0f1720;
+    stroke-width: 1.5;
+    transition: fill 0.15s ease, r 0.15s ease;
+    cursor: pointer;
+  }
+  .resort-dot:hover {
+    fill: var(--flag-orange);
+  }
+
+  /* Hover card that appears under the circle */
+  .resort-hover-card {
+    background: var(--slope-navy-light);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 10px 12px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+    font-family: inherit;
+    min-width: 160px;
+  }
+  .resort-hover-card .name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--snow);
+    margin-bottom: 2px;
+  }
+  .resort-hover-card .state {
+    font-size: 11px;
+    color: #8fa3b5;
+    margin-bottom: 8px;
+  }
+  .resort-hover-card a {
+    display: inline-block;
+    background: var(--flag-orange);
+    color: #1a1005;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    padding: 5px 10px;
+    border-radius: 6px;
+  }
+  .resort-hover-card a:hover {
+    filter: brightness(1.08);
+  }
+
+  .leaflet-popup-content-wrapper {
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+  }
+  .leaflet-popup-tip {
+    display: none;
+  }
+  .leaflet-popup-content {
+    margin: 0;
+  }
+  .leaflet-popup-close-button {
+    display: none;
+  }
+
+  .leaflet-container {
+    background: #0f1720;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Trail Map</div>
+  <h1>US Ski Resorts</h1>
+  <p>Hover a dot for details &middot; click to open the resort's site</p>
+</header>
+
+<div id="map"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+  const RESORTS = [{"name":"49 Degree North Ski Area","state":"Washington","lat":48.30156,"lon":-117.56302,"website":"https://www.ski49n.com"},{"name":"Abenaki Ski Area","state":"New Hampshire","lat":43.61062,"lon":-71.23027,"website":"https://www.wolfeboronh.us/abenaki-ski-area"},{"name":"Afton Alps Ski Area","state":"Minnesota","lat":44.85838,"lon":-92.78781,"website":"https://www.aftonalps.com"},{"name":"Alpine Valley Resort","state":"Wisconsin","lat":42.7365,"lon":-88.42814,"website":"https://www.alpinevalleyresort.com"},{"name":"Alpine Valley Ski Area","state":"Michigan","lat":42.65365,"lon":-83.523,"website":"https://www.skialpinevalley.com"},{"name":"Alpine Valley Ski Area","state":"Ohio","lat":41.5275,"lon":-81.25987,"website":"https://www.alpinevalleyohio.com"},{"name":"Alta Sierra Ski Resort & Terrain Park","state":"California","lat":35.712,"lon":-118.56029,"website":"https://www.altasierra.com"},{"name":"Alta Ski Area","state":"Utah","lat":40.58861,"lon":-111.6386,"website":"https://www.alta.com"},{"name":"Alyeska Resort","state":"Alaska","lat":60.97091,"lon":-149.09864,"website":"https://www.alyeskaresort.com"},{"name":"Andes Tower Hills, Inc.","state":"Minnesota","lat":45.85162,"lon":-95.6305,"website":"https://www.andestowerhills.com"},{"name":"Angel Fire Resort","state":"New Mexico","lat":36.38764,"lon":-105.27203,"website":"https://www.angelfireresort.com"},{"name":"Anthony Lakes","state":"Oregon","lat":44.96321,"lon":-118.23356,"website":"https://www.anthonylakes.com"},{"name":"Appalachian Ski Mtn.","state":"North Carolina","lat":36.17308,"lon":-81.66395,"website":"https://www.appskimtn.com"},{"name":"Arapahoe Basin Ski Area","state":"Colorado","lat":39.64342,"lon":-105.87198,"website":"https://www.arapahoebasin.com"},{"name":"Arctic Valley Ski Area","state":"Alaska","lat":61.24694,"lon":-149.53292,"website":"https://arcticvalley.org"},{"name":"Arizona Snowbowl","state":"Arizona","lat":35.33146,"lon":-111.70597,"website":"https://www.snowbowl.ski"},{"name":"Arrowhead Recreation Area","state":"New Hampshire","lat":43.36395,"lon":-72.33322,"website":"https://www.arrowheadnh.com"},{"name":"Aspen Highlands","state":"Colorado","lat":39.18252,"lon":-106.85633,"website":"https://www.aspensnowmass.com"},{"name":"Aspen Mountain","state":"Colorado","lat":39.18704,"lon":-106.81825,"website":"https://www.aspensnowmass.com"},{"name":"Attitash Mountain Resort","state":"New Hampshire","lat":44.08346,"lon":-71.22946,"website":"https://www.attitash.com"},{"name":"Ausblick Ski Area","state":"Wisconsin","lat":43.13527,"lon":-88.26427,"website":"https://www.ausblick.org"},{"name":"Bear Creek Mountain Resort","state":"Pennsylvania","lat":40.4771,"lon":-75.62558,"website":"https://www.bcmountainresort.com"},{"name":"Bear Mountain Resort","state":"California","lat":34.23717,"lon":-116.88949,"website":"https://www.bigbearmountainresort.com"},{"name":"Bear Valley Mountain","state":"California","lat":38.49343,"lon":-120.04414,"website":"https://www.bearvalley.com"},{"name":"Beaver Creek Resort","state":"Colorado","lat":39.60493,"lon":-106.51669,"website":"https://www.beavercreek.com"},{"name":"Beaver Mountain Ski Area","state":"Utah","lat":41.96876,"lon":-111.54414,"website":"https://www.skithebeav.com"},{"name":"Beech Mountain Resort","state":"North Carolina","lat":36.19539,"lon":-81.87803,"website":"https://www.beechmountainresort.com"},{"name":"Belleayre Mountain","state":"New York","lat":42.13603,"lon":-74.51002,"website":"https://www.belleayre.com"},{"name":"Berkshire East Mountain Resort","state":"Massachusetts","lat":42.62189,"lon":-72.87705,"website":"https://www.berkshireeast.com"},{"name":"Big Boulder Ski Area","state":"Pennsylvania","lat":41.05076,"lon":-75.60098,"website":"https://www.jfbb.com"},{"name":"Big Powderhorn Mountain Resort","state":"Michigan","lat":46.50991,"lon":-90.09616,"website":"https://www.bigpowderhorn.net"},{"name":"Big Rock Mountain","state":"Maine","lat":46.52313,"lon":-67.82886,"website":"https://www.bigrockmaine.com"},{"name":"Big Sky Resort","state":"Montana","lat":45.28638,"lon":-111.40116,"website":"https://www.bigskyresort.com"},{"name":"Big Snow Resort","state":"Michigan","lat":46.50613,"lon":-89.99758,"website":"https://www.bigsnow.com"},{"name":"Black Mountain of Maine","state":"Maine","lat":44.57754,"lon":-70.61318,"website":"https://skiblackmountain.org"},{"name":"Black Mountain Ski Area","state":"New Hampshire","lat":44.16719,"lon":-71.16363,"website":"https://www.blackmt.com"},{"name":"Blacktail Mountain Ski Area","state":"Montana","lat":48.01545,"lon":-114.36946,"website":"https://www.blacktailmountain.com"},{"name":"Blue Knob","state":"Pennsylvania","lat":40.29752,"lon":-78.54366,"website":"https://www.blueknob.com"},{"name":"Blue Mountain Resort","state":"Pennsylvania","lat":40.81143,"lon":-75.52086,"website":"https://www.skibluemt.com"},{"name":"Bluebird Backcountry","state":"Colorado","lat":40.39977,"lon":-106.54913,"website":"https://www.bluebirdbackcountry.com"},{"name":"Bluewood Ski Area","state":"Washington","lat":46.08319,"lon":-117.85091,"website":"https://www.bluewood.com"},{"name":"Bogus Basin Mountain Recreation Area","state":"Idaho","lat":43.64321,"lon":-116.20599,"website":"https://www.bogusbasin.org"},{"name":"Bolton Valley Resort","state":"Vermont","lat":44.42295,"lon":-72.85121,"website":"https://www.boltonvalley.com"},{"name":"Boreal Mountain Resort","state":"California","lat":39.33669,"lon":-120.35054,"website":"https://www.rideboreal.com"},{"name":"Boston Mills/Brandywine Ski Resort","state":"Ohio","lat":41.2656,"lon":-81.56316,"website":"https://www.bmbw.com"},{"name":"Bousquet Ski Area","state":"Massachusetts","lat":42.41971,"lon":-73.27658,"website":"https://www.bousquetmountain.com"},{"name":"Boyce Park Ski & Tubing Area","state":"Pennsylvania","lat":40.4626,"lon":-79.74752,"website":"https://www.alleghenycounty.us/parks"},{"name":"Boyne Highlands Resort","state":"Michigan","lat":45.46543,"lon":-84.92656,"website":"https://www.boynehighlands.com"},{"name":"Boyne Mountain Resort","state":"Michigan","lat":45.16394,"lon":-84.93002,"website":"https://www.boynemountain.com"},{"name":"Bradford Ski Area","state":"Massachusetts","lat":42.74544,"lon":-71.05579,"website":"https://www.skibradford.com"},{"name":"Breckenridge Ski Resort","state":"Colorado","lat":39.48355,"lon":-106.06821,"website":"https://www.breckenridge.com"},{"name":"Bretton Woods Ski Area","state":"New Hampshire","lat":44.25986,"lon":-71.46009,"website":"https://www.brettonwoods.com"},{"name":"Brian Head Resort","state":"Utah","lat":37.70308,"lon":-112.84978,"website":"https://www.brianhead.com"},{"name":"Bridger Bowl Ski Area","state":"Montana","lat":45.818,"lon":-110.89668,"website":"https://www.bridgerbowl.com"},{"name":"Brighton Ski Resort","state":"Utah","lat":40.59916,"lon":-111.5828,"website":"https://www.brightonresort.com"},{"name":"Bristol Mountain Resort","state":"New York","lat":42.74606,"lon":-77.40407,"website":"https://www.bristolmountain.com"},{"name":"Bromley Mountain Resort","state":"Vermont","lat":43.21368,"lon":-72.93482,"website":"https://www.bromley.com"},{"name":"Brundage Mountain Resort","state":"Idaho","lat":45.00605,"lon":-116.15456,"website":"https://www.brundage.com"},{"name":"Bryce Resort","state":"Virginia","lat":38.81827,"lon":-78.76567,"website":"https://www.bryceresort.com"},{"name":"Buck Hill Ski & Snowboard Area","state":"Minnesota","lat":44.72518,"lon":-93.28399,"website":"https://www.buckhill.com"},{"name":"Buena Vista Ski Area","state":"Minnesota","lat":47.6589,"lon":-94.8788,"website":"https://www.bvskiarea.com"},{"name":"Burke Mountain Resort LLC","state":"Vermont","lat":44.58849,"lon":-71.91344,"website":"https://www.skiburke.com"},{"name":"Buttermilk","state":"Colorado","lat":39.20645,"lon":-106.86115,"website":"https://www.aspensnowmass.com"},{"name":"Caberfae Peaks","state":"Michigan","lat":44.24522,"lon":-85.72042,"website":"https://www.caberfaepeaks.com"},{"name":"Camden Snow Bowl","state":"Maine","lat":44.21796,"lon":-69.13478,"website":"https://www.camdensnowbowl.com"},{"name":"Camelback Resort","state":"Pennsylvania","lat":41.05198,"lon":-75.35467,"website":"https://www.skicamelback.com"},{"name":"Camp 10 Ski Area","state":"Wisconsin","lat":45.55093,"lon":-89.49909,"website":"https://www.camp10skiandsnowboard.com"},{"name":"Campton Mountain","state":"New Hampshire","lat":43.86886,"lon":-71.6094,"website":"https://www.camptonmountain.com"},{"name":"Canaan Valley Resort","state":"West Virginia","lat":39.00917,"lon":-79.43867,"website":"https://www.canaanresort.com"},{"name":"Cannon Mountain","state":"New Hampshire","lat":44.17801,"lon":-71.70187,"website":"https://www.cannonmt.com"},{"name":"Cannonsburg Ski Area","state":"Michigan","lat":43.05538,"lon":-85.50187,"website":"https://www.cannonsburg.com"},{"name":"Cascade Mountain","state":"Wisconsin","lat":43.50436,"lon":-89.51732,"website":"https://www.cascademountain.com"},{"name":"Cataloochee Ski Area","state":"North Carolina","lat":35.56312,"lon":-83.08986,"website":"https://www.cataloochee.com"},{"name":"Catamount Mountain Resort","state":"New York","lat":42.16975,"lon":-73.47675,"website":"https://www.catamountski.com"},{"name":"Cherry Peak Resort","state":"Utah","lat":41.927,"lon":-111.75638,"website":"https://www.skicpr.com"},{"name":"Chester Bowl","state":"Minnesota","lat":46.81387,"lon":-92.09589,"website":"https://www.chesterbowl.org"},{"name":"Chestnut Mountain Resort","state":"Illinois","lat":42.31976,"lon":-90.39377,"website":"https://www.chestnutmtn.com"},{"name":"China Peak Mountain Resort","state":"California","lat":37.2372,"lon":-119.15735,"website":"https://www.skichinapeak.com"},{"name":"Christie Mountain Snow Area","state":"Wisconsin","lat":45.50977,"lon":-91.3808,"website":"https://www.christiemountain.com"},{"name":"Cloudmont Ski","state":"Alabama","lat":34.53576,"lon":-85.60321,"website":"https://www.cloudmont.com"},{"name":"Cochrans Ski Area","state":"Vermont","lat":44.39581,"lon":-72.98171,"website":"https://www.cochranskiarea.com"},{"name":"Cockaigne Resort LLC","state":"New York","lat":42.2646,"lon":-79.16213,"website":"https://www.cockaigne.com"},{"name":"Cooper Spur Mountain Resort","state":"Oregon","lat":45.42587,"lon":-121.59039,"website":"https://www.cooperspur.com"},{"name":"Copper Mountain Resort","state":"Colorado","lat":39.50648,"lon":-106.14108,"website":"https://www.coppercolorado.com"},{"name":"Cranmore Mountain Resort","state":"New Hampshire","lat":44.05705,"lon":-71.10997,"website":"https://www.cranmore.com"},{"name":"Crested Butte Mountain Resort","state":"Colorado","lat":38.89972,"lon":-106.9657,"website":"https://www.skicb.com"},{"name":"Crotched Mountain Ski & Ride","state":"New Hampshire","lat":43.01288,"lon":-71.87859,"website":"https://www.crotchedmtn.com"},{"name":"Crystal Mountain","state":"Michigan","lat":44.52064,"lon":-85.9923,"website":"https://www.crystalmountain.com"},{"name":"Crystal Mountain Resort","state":"Washington","lat":46.92931,"lon":-121.50462,"website":"https://www.crystalmountainresort.com"},{"name":"Dartmouth Skiway","state":"New Hampshire","lat":43.78838,"lon":-72.09952,"website":"https://www.dartmouthskiway.com"},{"name":"Deer Mountain Ski Resort","state":"South Dakota","lat":44.30903,"lon":-103.81839,"website":"https://www.facebook.com/Deer-Mountain-Ski-Resort-"},{"name":"Deer Valley Resort","state":"Utah","lat":40.63802,"lon":-111.47833,"website":"https://www.deervalley.com"},{"name":"Detroit Mountain Recreation Area","state":"Minnesota","lat":46.81325,"lon":-95.78326,"website":"https://www.detroitmountain.com"},{"name":"Devil's Head Resort & Convention Center","state":"Wisconsin","lat":43.41855,"lon":-89.62696,"website":"https://www.devilsheadresort.com"},{"name":"Diamond Peak Ski Resort","state":"Nevada","lat":39.25436,"lon":-119.92362,"website":"https://www.diamondpeak.com"},{"name":"Discovery Ski Area","state":"Montana","lat":46.25018,"lon":-113.23717,"website":"https://www.skidiscovery.com"},{"name":"DNC Parks & Resorts at Yosemite, Inc.","state":"California","lat":37.66533,"lon":-119.66291,"website":"https://www.yosemitepark.com"},{"name":"Dodge Ridge Ski Area","state":"California","lat":38.1906,"lon":-119.95576,"website":"https://www.dodgeridge.com"},{"name":"Donner Ski Ranch","state":"California","lat":39.31836,"lon":-120.33022,"website":"https://www.donnerskiranch.com"},{"name":"Double H Ranch","state":"New York","lat":43.37505,"lon":-73.7907,"website":"https://www.doublehranch.org"},{"name":"Eagle Point Resort","state":"Utah","lat":38.32101,"lon":-112.38383,"website":"https://www.eaglepointresort.com"},{"name":"Eagle Rock Ski Area","state":"Pennsylvania","lat":40.92087,"lon":-76.09701,"website":"https://www.eaglerockresort.com"},{"name":"Eaglebrook School","state":"Massachusetts","lat":42.54315,"lon":-72.59191,"website":"https://www.eaglebrook.org"},{"name":"Eaglecrest Ski Area","state":"Alaska","lat":58.27499,"lon":-134.51262,"website":"https://www.skieaglecrest.com"},{"name":"Eastman Cross Country","state":"New Hampshire","lat":43.51582,"lon":-72.11298,"website":"https://www.eastmannh.org/ski"},{"name":"Echo Mountain","state":"Colorado","lat":39.68516,"lon":-105.51937,"website":"https://www.echomntn.com"},{"name":"Eldora Mountain Resort","state":"Colorado","lat":39.93783,"lon":-105.58279,"website":"https://www.eldora.com"},{"name":"Elk Mountain Ski Resort, Inc.","state":"Pennsylvania","lat":41.72406,"lon":-75.55345,"website":"https://www.elkskier.com"},{"name":"Elk Ridge Ski & Outdoor Recreation Area","state":"Arizona","lat":35.21597,"lon":-112.19263,"website":"https://www.elkridgeski.com"},{"name":"Four Seasons Golf and Ski Center","state":"New York","lat":43.03556,"lon":-75.97194,"website":"https://www.fourseasonsgolfandski.com"},{"name":"Frisco Adventure Park","state":"Colorado","lat":39.57535,"lon":-106.07768,"website":"https://www.townoffrisco.com"},{"name":"Frost Fire Park","state":"North Dakota","lat":48.91268,"lon":-98.06863,"website":"https://www.frostfireskiarea.com"},{"name":"Gateway Hills Snow Park","state":"New Hampshire","lat":42.71529,"lon":-71.45258,"website":"https://www.gatewayhillssnowpark.com"},{"name":"Giants Ridge","state":"Minnesota","lat":47.57711,"lon":-92.30323,"website":"https://www.giantsridge.com"},{"name":"Gore Mountain","state":"New York","lat":43.67391,"lon":-74.00674,"website":"https://www.goremountain.com"},{"name":"Granby Ranch","state":"Colorado","lat":40.04526,"lon":-105.90657,"website":"https://granbyranch.com/"},{"name":"Grand Geneva Resort","state":"Wisconsin","lat":42.61031,"lon":-88.40505,"website":"https://www.grandgeneva.com"},{"name":"Grand Targhee Resort","state":"Wyoming","lat":43.78953,"lon":-110.9577,"website":"https://www.grandtarghee.com"},{"name":"Granite Gorge Ski Area","state":"New Hampshire","lat":42.97168,"lon":-72.21202,"website":"https://www.granitegorge.com"},{"name":"Granite Peak at Rib Mountain State Park","state":"Wisconsin","lat":44.92989,"lon":-89.68305,"website":"https://www.skigranitepeak.com"},{"name":"Granlibakken Tahoe Ski Area","state":"California","lat":39.15466,"lon":-120.15472,"website":"https://www.granlibakken.com"},{"name":"Great Bear Ski Valley","state":"South Dakota","lat":43.57852,"lon":-96.66444,"website":"https://www.greatbearpark.com"},{"name":"Great Divide Ski Area","state":"Montana","lat":46.75365,"lon":-112.31337,"website":"https://skigd.com"},{"name":"Greek Peak Mountain Resort","state":"New York","lat":42.50888,"lon":-76.14538,"website":"https://www.greekpeakmtnresort.com"},{"name":"Gunstock Mountain Resort","state":"New Hampshire","lat":43.54172,"lon":-71.36282,"website":"https://www.gunstock.com"},{"name":"Hatcher Alpine Xperience dba Skeetawk Ski Area","state":"Alaska","lat":61.74358,"lon":-149.23388,"website":"https://www.skeetawk.com"},{"name":"Hawksnest Snow Tubing","state":"North Carolina","lat":36.14377,"lon":-81.82621,"website":"https://hawksnesttubing.com"},{"name":"Heavenly Mountain Resort","state":"Nevada","lat":38.9618,"lon":-119.88563,"website":"https://www.skiheavenly.com"},{"name":"Heiliger Huegel Ski Club","state":"Wisconsin","lat":43.25282,"lon":-88.31111,"website":"https://www.hhskiclub.com"},{"name":"Hickory Hills","state":"Michigan","lat":44.76938,"lon":-85.66617,"website":"https://www.ci.traverse-"},{"name":"Hidden Valley Resort","state":"Pennsylvania","lat":40.05874,"lon":-79.25806,"website":"https://www.hiddenvalleyresort.com"},{"name":"Hidden Valley Ski Area","state":"Missouri","lat":38.53597,"lon":-90.65058,"website":"https://www.hiddenvalleyski.com"},{"name":"Hillberg Ski Area","state":"Alaska","lat":61.27681,"lon":-149.82451,"website":"https://jberlife.com/hillberg"},{"name":"Hilltop Ski Area","state":"Alaska","lat":61.14121,"lon":-149.74507,"website":"https://www.hilltopskiarea.org"},{"name":"Hogadon Basin Ski Area","state":"Wyoming","lat":42.7459,"lon":-106.33893,"website":"http://hogadon.net/"},{"name":"Holiday Mountain Ski Area","state":"New York","lat":41.63026,"lon":-74.61486,"website":"https://www.holidaymtn.com"},{"name":"Holiday Valley Resort","state":"New York","lat":42.26382,"lon":-78.66735,"website":"https://www.holidayvalley.com"},{"name":"HoliMont Ski Area","state":"New York","lat":42.27399,"lon":-78.68896,"website":"https://www.holimont.com"},{"name":"Homewood Mountain Resort","state":"California","lat":39.08627,"lon":-120.16039,"website":"https://www.skihomewood.com"},{"name":"Hoodoo Ski Area","state":"Oregon","lat":44.40924,"lon":-121.87139,"website":"https://www.hoodoo.com"},{"name":"Howelsen Hill Ski Area","state":"Colorado","lat":40.48397,"lon":-106.83769,"website":"https://www.steamboatsprings.net/ski"},{"name":"Huff Hills Ski Area","state":"North Dakota","lat":46.628,"lon":-100.72319,"website":"https://www.huffhills.com"},{"name":"Hunter Mountain","state":"New York","lat":42.20353,"lon":-74.22458,"website":"https://www.huntermtn.com"},{"name":"Hurricane Ridge Ski Area","state":"Washington","lat":47.9706,"lon":-123.49516,"website":"https://www.hurricaneridge.com"},{"name":"Hyland Hills Ski Area","state":"Minnesota","lat":44.84416,"lon":-93.36363,"website":"https://www.hylandski.com"},{"name":"Jack Frost Mountain","state":"Pennsylvania","lat":41.1014,"lon":-75.65014,"website":"https://www.jfbb.com"},{"name":"Jackson Hole Mountain Resort","state":"Wyoming","lat":43.58821,"lon":-110.82768,"website":"https://www.jacksonhole.com"},{"name":"Jay Peak Resort","state":"Vermont","lat":44.93807,"lon":-72.50402,"website":"https://www.jaypeakresort.com"},{"name":"Jiminy Peak Mountain Resort","state":"Massachusetts","lat":42.55588,"lon":-73.29214,"website":"https://www.jiminypeak.com"},{"name":"June Mountain","state":"California","lat":37.76858,"lon":-119.09061,"website":"https://www.junemountain.com"},{"name":"Keystone Resort","state":"Colorado","lat":39.60824,"lon":-105.9437,"website":"https://www.keystoneresort.com"},{"name":"Killington Resort","state":"Vermont","lat":43.62645,"lon":-72.79675,"website":"https://www.killington.com"},{"name":"King Pine Ski Area","state":"New Hampshire","lat":43.86878,"lon":-71.08879,"website":"https://www.kingpine.com"},{"name":"Kingvale Snow Schoolers","state":"California","lat":39.31247,"lon":-120.44656,"website":"http://www.snowschoolers.com/kingvale"},{"name":"Kirkwood Mountain Resort","state":"California","lat":38.68551,"lon":-120.06519,"website":"https://www.kirkwood.com"},{"name":"Kissing Bridge Corp.","state":"New York","lat":42.6,"lon":-78.65244,"website":"https://www.kbski.com"},{"name":"Lake City Ski Hill","state":"Colorado","lat":38.01135,"lon":-107.31166,"website":"https://www.lakecityskihill.com"},{"name":"Laurel Mountain","state":"Pennsylvania","lat":40.16441,"lon":-79.16586,"website":"https://www.laurelmountainski.com"},{"name":"Lee Canyon","state":"Nevada","lat":36.30451,"lon":-115.67957,"website":"https://www.leecanyonlv.com"},{"name":"Liberty Mountain Resort","state":"Pennsylvania","lat":39.76434,"lon":-77.37535,"website":"https://www.libertymountainresort.com"},{"name":"Liberty Mountain Snowflex Centre","state":"Virginia","lat":37.35342,"lon":-79.16674,"website":"https://www.liberty.edu/snowflex"},{"name":"Little Switzerland","state":"Wisconsin","lat":43.33862,"lon":-88.27896,"website":"https://www.littleswitz.com"},{"name":"Lookout Pass Ski & Recreation Area","state":"Idaho","lat":47.45668,"lon":-115.6971,"website":"https://www.skilookout.com"},{"name":"Loon Mountain Recreation Corp.","state":"New Hampshire","lat":44.05698,"lon":-71.6335,"website":"https://www.loonmtn.com"},{"name":"Lost Trail Ski Area, Inc.","state":"Montana","lat":45.69282,"lon":-113.952,"website":"https://www.losttrail.com"},{"name":"Lost Valley Ski Area","state":"Maine","lat":44.13673,"lon":-70.28289,"website":"https://www.lostvalleyski.com"},{"name":"Loup Loup Ski Bowl","state":"Washington","lat":48.39506,"lon":-119.91103,"website":"https://www.skitheloup.com"},{"name":"Loveland Ski Area","state":"Colorado","lat":39.68071,"lon":-105.89797,"website":"https://www.skiloveland.com"},{"name":"Lutsen Mountains","state":"Minnesota","lat":47.66425,"lon":-90.71349,"website":"https://www.lutsen.com"},{"name":"Mad River Glen","state":"Vermont","lat":44.20296,"lon":-72.91735,"website":"https://www.madriverglen.com"},{"name":"Mad River Mountain","state":"Ohio","lat":40.31866,"lon":-83.67767,"website":"https://www.skimadriver.com"},{"name":"Magic Mountain","state":"Vermont","lat":43.20249,"lon":-72.77224,"website":"https://www.magicmtn.com"},{"name":"Magic Mountain Resort","state":"Idaho","lat":42.19007,"lon":-114.28525,"website":"https://www.magicmountainresort.com"},{"name":"Mammoth Mountain Ski Area","state":"California","lat":37.65183,"lon":-119.0268,"website":"https://www.mammothmountain.com"},{"name":"Maple Ski Ridge","state":"New York","lat":42.81768,"lon":-74.03211,"website":"https://www.mapleskiridge.com"},{"name":"Marquette Mountain","state":"Michigan","lat":46.50887,"lon":-87.42087,"website":"https://marquettemountain.com"},{"name":"Massanutten Resort","state":"Virginia","lat":38.40723,"lon":-78.71602,"website":"https://www.massresort.com"},{"name":"Maverick Mountain Resort","state":"Montana","lat":45.43456,"lon":-113.12834,"website":"https://www.skimaverick.com"},{"name":"McCauley Mtn. Ski Center","state":"New York","lat":43.69893,"lon":-74.96344,"website":"https://www.oldforgeny.com"},{"name":"McIntyre Ski Area","state":"New Hampshire","lat":43.00713,"lon":-71.44185,"website":"https://www.mcintyreskiarea.com"},{"name":"Meadowlark Ski Lodge","state":"Wyoming","lat":44.17457,"lon":-107.21358,"website":"https://www.lodgesofthebighorns.com"},{"name":"Middlebury College Snow Bowl","state":"Vermont","lat":43.93992,"lon":-72.95752,"website":"https://www.middleburysnowbowl.com"},{"name":"Mission Ridge Ski & Board Resort","state":"Washington","lat":47.29306,"lon":-120.39994,"website":"https://www.missionridge.com"},{"name":"Mohawk Mountain Ski Area","state":"Connecticut","lat":41.83885,"lon":-73.31542,"website":"https://www.mohawkmtn.com"},{"name":"Monarch Mountain","state":"Colorado","lat":38.51262,"lon":-106.33195,"website":"https://www.skimonarch.com"},{"name":"Mont Du Lac Resort","state":"Wisconsin","lat":46.65219,"lon":-92.28431,"website":"https://www.mdlresort.com"},{"name":"Mont Ripley Ski Area","state":"Michigan","lat":47.12847,"lon":-88.56007,"website":"https://www.skimontripley.com"},{"name":"Montage Mountain","state":"Pennsylvania","lat":41.35184,"lon":-75.66294,"website":"https://www.montagemountainresorts.com"},{"name":"Montana Snowbowl","state":"Montana","lat":47.01504,"lon":-113.99955,"website":"https://www.montanasnowbowl.com"},{"name":"Mount Bohemia","state":"Michigan","lat":47.38853,"lon":-88.02092,"website":"https://www.mtbohemia.com"},{"name":"Mount Kato Ski Area","state":"Minnesota","lat":44.13376,"lon":-94.03333,"website":"https://www.mountkato.com"},{"name":"Mount Peter","state":"New York","lat":41.243,"lon":-74.29058,"website":"https://www.mtpeter.com"},{"name":"Mount Pleasant of Edinboro","state":"Pennsylvania","lat":41.85158,"lon":-80.07035,"website":"https://www.skimountpleasant.com"},{"name":"Mount Snow Resort","state":"Vermont","lat":42.96869,"lon":-72.89452,"website":"https://www.mountsnow.com"},{"name":"Mount Southington Ski Area","state":"Connecticut","lat":41.58296,"lon":-72.92465,"website":"https://www.mountsouthington.com"},{"name":"Mount Sunapee Resort","state":"New Hampshire","lat":43.33253,"lon":-72.08003,"website":"https://www.mountsunapee.com"},{"name":"Mountain Creek Resort","state":"New Jersey","lat":41.19092,"lon":-74.50526,"website":"https://www.mountaincreek.com"},{"name":"Mountain High Resort","state":"California","lat":34.37763,"lon":-117.69142,"website":"https://www.mthigh.com"},{"name":"Mt. Abram Ski Area","state":"Maine","lat":44.38043,"lon":-70.7068,"website":"https://www.mtabram.com"},{"name":"Mt. Ashland","state":"Oregon","lat":42.08234,"lon":-122.70478,"website":"https://www.mtashland.com"},{"name":"Mt. Bachelor LLC","state":"Oregon","lat":44.00303,"lon":-121.67906,"website":"https://www.mtbachelor.com"},{"name":"Mt. Baker Ski Area","state":"Washington","lat":48.85787,"lon":-121.6666,"website":"https://www.mtbaker.us"},{"name":"Mt. Baldy Ski Lifts","state":"California","lat":34.27081,"lon":-117.62185,"website":"https://www.mtbaldyresort.com"},{"name":"Mt. Brighton Ski Area","state":"Michigan","lat":42.54141,"lon":-83.81159,"website":"https://www.mtbrighton.com"},{"name":"Mt. Crescent Ski Area","state":"Iowa","lat":41.39551,"lon":-95.86061,"website":"https://www.skicrescent.com"},{"name":"Mt. Eyak Ski Area","state":"Alaska","lat":60.55043,"lon":-145.74997,"website":"https://www.mteyak.org"},{"name":"Mt. Holiday","state":"Michigan","lat":44.74212,"lon":-85.51455,"website":"https://www.mt-holiday.com"},{"name":"Mt. Hood Meadows","state":"Oregon","lat":45.3324,"lon":-121.66516,"website":"https://www.skihood.com"},{"name":"Mt. Hood Skibowl","state":"Oregon","lat":45.30315,"lon":-121.77317,"website":"https://www.skibowl.com"},{"name":"Mt. La Crosse","state":"Wisconsin","lat":43.7442,"lon":-91.18257,"website":"https://www.mtlacrosse.com"},{"name":"Mt. Lemmon Ski Valley","state":"Arizona","lat":32.44824,"lon":-110.78156,"website":"https://www.skithelemmon.com"},{"name":"Mt. Rose - Ski Tahoe","state":"Nevada","lat":39.32905,"lon":-119.88535,"website":"https://www.skirose.com"},{"name":"Mt. Shasta Ski Park","state":"California","lat":41.32173,"lon":-122.20357,"website":"https://www.skipark.com"},{"name":"Mt. Ski Gull","state":"Minnesota","lat":46.44817,"lon":-94.37794,"website":"https://www.mountskigull.com"},{"name":"Mt. Spokane Ski & Snowboard Park","state":"Washington","lat":47.92191,"lon":-117.09622,"website":"https://www.mtspokane.com"},{"name":"Nashoba Valley Ski Area","state":"Massachusetts","lat":42.54332,"lon":-71.44502,"website":"https://www.skinashoba.com"},{"name":"Nordic Mountain","state":"Wisconsin","lat":44.12212,"lon":-89.18113,"website":"https://www.nordicmountain.com/"},{"name":"Northstar California","state":"California","lat":39.27528,"lon":-120.12099,"website":"https://www.northstarcalifornia.com"},{"name":"Nub's Nob Ski Area","state":"Michigan","lat":45.47218,"lon":-84.90471,"website":"https://www.nubsnob.com"},{"name":"Oak Mountain","state":"New York","lat":43.51468,"lon":-74.36067,"website":"https://www.oakmountainski.com"},{"name":"Ober Gatlinburg Ski Area","state":"Tennessee","lat":35.70379,"lon":-83.5582,"website":"https://www.obergatlinburg.com"},{"name":"Oglebay Resort","state":"West Virginia","lat":40.10102,"lon":-80.66171,"website":"https://www.oglebay-resort.com"},{"name":"Okemo Mountain Resort","state":"Vermont","lat":43.40317,"lon":-72.717,"website":"https://www.okemo.com"},{"name":"Otis Ridge","state":"Massachusetts","lat":42.19695,"lon":-73.09835,"website":"https://www.otisridge.com"},{"name":"Pajarito Mountain Ski Area","state":"New Mexico","lat":35.89572,"lon":-106.39048,"website":"https://www.pajarito.ski"},{"name":"Park City Mountain Resort","state":"Utah","lat":40.65202,"lon":-111.50789,"website":"https://www.parkcitymountain.com"},{"name":"Pats Peak","state":"New Hampshire","lat":43.16465,"lon":-71.79734,"website":"https://www.patspeak.com"},{"name":"Payette Lakes Ski Club","state":"Idaho","lat":44.93036,"lon":-116.16248,"website":"https://www.littleskihill.org"},{"name":"Pebble Creek Ski Area","state":"Idaho","lat":42.77927,"lon":-112.15926,"website":"https://www.pebblecreekskiarea.com"},{"name":"Peek'n Peak Resort","state":"New York","lat":42.06308,"lon":-79.73526,"website":"https://www.pknpk.com"},{"name":"Perfect North Slopes","state":"Indiana","lat":39.14824,"lon":-84.88558,"website":"https://www.perfectnorth.com"},{"name":"Pico Mountain","state":"Vermont","lat":43.66348,"lon":-72.84247,"website":"https://www.picomountain.com"},{"name":"Pine Creek Ski Resort","state":"Wyoming","lat":42.10371,"lon":-110.82882,"website":"https://www.pinecreekskiresort.com"},{"name":"Pine Mountain Ski Resort","state":"Michigan","lat":45.83977,"lon":-88.08867,"website":"https://www.pinemountainresort.com"},{"name":"Pomerelle Mountain Resort","state":"Idaho","lat":42.31867,"lon":-113.60777,"website":"https://www.pomerelle.com"},{"name":"Powder Mountain","state":"Utah","lat":41.38186,"lon":-111.78077,"website":"https://www.powdermountain.com"},{"name":"Powder Ridge Mountain Park & Resort","state":"Connecticut","lat":41.50237,"lon":-72.73643,"website":"https://www.PowderRidgePark.com"},{"name":"Powderhorn Mountain Resort","state":"Colorado","lat":39.07002,"lon":-108.15056,"website":"https://www.powderhorn.com"},{"name":"Purgatory Resort","state":"Colorado","lat":37.63145,"lon":-107.81394,"website":"https://www.purgatoryresort.com"},{"name":"Red Lodge Mountain","state":"Montana","lat":45.19146,"lon":-109.33635,"website":"https://www.redlodgemountain.com"},{"name":"Red River Ski & Summer Area","state":"New Mexico","lat":36.70702,"lon":-105.41282,"website":"https://www.redriverskiarea.com"},{"name":"Roundtop Mountain Resort","state":"Pennsylvania","lat":40.11019,"lon":-76.92753,"website":"https://www.skiroundtop.com"},{"name":"Saddleback Maine","state":"Maine","lat":44.94666,"lon":-70.52727,"website":"https://www.saddlebackmaine.com"},{"name":"Sandia Peak Ski Area","state":"New Mexico","lat":35.20797,"lon":-106.41325,"website":"https://www.sandiapeak.com"},{"name":"Sapphire Valley Ski Area","state":"North Carolina","lat":35.12472,"lon":-83.05871,"website":"https://www.Skisapphirevalley.com"},{"name":"Schweitzer","state":"Idaho","lat":48.3685,"lon":-116.62247,"website":"https://www.schweitzer.com"},{"name":"Seven Springs Mountain Resort","state":"Pennsylvania","lat":40.02368,"lon":-79.2976,"website":"https://www.7springs.com"},{"name":"Shanty Creek Resort","state":"Michigan","lat":44.94028,"lon":-85.13298,"website":"https://www.shantycreek.com"},{"name":"Shawnee Mountain Ski Area","state":"Pennsylvania","lat":41.04057,"lon":-75.0852,"website":"https://www.shawneemt.com"},{"name":"Shawnee Peak Ski Area","state":"Maine","lat":44.05895,"lon":-70.81505,"website":"https://www.shawneepeak.com"},{"name":"Showdown Montana","state":"Montana","lat":46.83896,"lon":-110.70042,"website":"https://www.showdownmontana.com"},{"name":"Sierra-at-Tahoe","state":"California","lat":38.80123,"lon":-120.08055,"website":"https://www.sierraattahoe.com"},{"name":"Silver Mountain Ski Resort","state":"Idaho","lat":47.54134,"lon":-116.13315,"website":"https://www.silvermt.com"},{"name":"Silverton Mountain","state":"Colorado","lat":37.8853,"lon":-107.6659,"website":"https://www.silvertonmountain.com"},{"name":"Sipapu Ski & Summer Resort","state":"New Mexico","lat":36.15487,"lon":-105.54787,"website":"https://www.sipapu.ski"},{"name":"Ski Apache Resort","state":"New Mexico","lat":33.39803,"lon":-105.78874,"website":"https://www.skiapache.com"},{"name":"Ski Brule","state":"Michigan","lat":46.03029,"lon":-88.70121,"website":"https://www.skibrule.com"},{"name":"Ski Butternut","state":"Massachusetts","lat":42.18434,"lon":-73.31985,"website":"https://www.skibutternut.com"},{"name":"Ski Cooper","state":"Colorado","lat":39.36084,"lon":-106.30138,"website":"https://www.skicooper.com"},{"name":"Ski Santa Fe","state":"New Mexico","lat":35.797,"lon":-105.80235,"website":"https://www.skisantafe.com"},{"name":"Ski Sundown","state":"Connecticut","lat":41.88521,"lon":-72.94676,"website":"https://www.skisundown.com"},{"name":"Sleeping Giant Ski Area","state":"Wyoming","lat":44.49349,"lon":-109.93938,"website":"https://www.skisg.com"},{"name":"Smugglers' Notch Resort","state":"Vermont","lat":44.58903,"lon":-72.78993,"website":"https://www.smuggs.com"},{"name":"Snow King Mountain Resort","state":"Wyoming","lat":43.47296,"lon":-110.756,"website":"https://www.snowkingmountain.com"},{"name":"Snowbasin Resort Co.","state":"Utah","lat":41.2168,"lon":-111.85713,"website":"https://www.snowbasin.com"},{"name":"Snowbird","state":"Utah","lat":40.58126,"lon":-111.65687,"website":"https://www.snowbird.com"},{"name":"Snowmass","state":"Colorado","lat":39.21099,"lon":-106.94918,"website":"https://www.aspensnowmass.com"},{"name":"Snowshoe","state":"West Virginia","lat":38.41462,"lon":-79.99738,"website":"https://www.snowshoemtn.com"},{"name":"Soda Springs Ski Area","state":"California","lat":39.32072,"lon":-120.37963,"website":"https://www.skisodasprings.com"},{"name":"Soldier Mountain Ski Area","state":"Idaho","lat":43.48612,"lon":-114.82923,"website":"https://www.soldiermountain.com"},{"name":"Solitude Mountain Ski Area","state":"Utah","lat":40.62045,"lon":-111.59182,"website":"https://www.solitudemountain.com"},{"name":"Spirit Mountain Recreation Area","state":"Minnesota","lat":46.71887,"lon":-92.21672,"website":"https://www.spiritmt.com"},{"name":"Squaw Valley / Alpine Meadows","state":"California","lat":39.19829,"lon":-120.23542,"website":"https://www.squawalpine.com"},{"name":"Steamboat Ski & Resort","state":"Colorado","lat":40.45787,"lon":-106.80445,"website":"https://www.steamboat.com"},{"name":"Stevens Pass","state":"Washington","lat":47.74582,"lon":-121.08872,"website":"https://www.stevenspass.com"},{"name":"Stowe Mountain Resort","state":"Vermont","lat":44.53093,"lon":-72.78143,"website":"https://www.stowe.com"},{"name":"Stratton","state":"Vermont","lat":43.11434,"lon":-72.90552,"website":"https://www.stratton.com"},{"name":"Sugar Bowl Resort","state":"California","lat":39.30174,"lon":-120.33327,"website":"https://www.sugarbowl.com"},{"name":"Sugar Mountain Resort","state":"North Carolina","lat":36.13085,"lon":-81.85872,"website":"https://www.skisugar.com"},{"name":"Sugarbush Resort","state":"Vermont","lat":44.13855,"lon":-72.89416,"website":"https://www.sugarbush.com"},{"name":"Sugarloaf","state":"Maine","lat":45.03311,"lon":-70.31299,"website":"https://www.sugarloaf.com"},{"name":"Sun Valley Resort","state":"Idaho","lat":43.69557,"lon":-114.35426,"website":"https://www.sunvalley.com"},{"name":"Sundance","state":"Utah","lat":40.39476,"lon":-111.58873,"website":"https://www.sundanceresort.com"},{"name":"Sunday River Resort","state":"Maine","lat":44.47408,"lon":-70.85677,"website":"https://www.sundayriver.com"},{"name":"Sunlight Mountain Resort","state":"Colorado","lat":39.40056,"lon":-107.33866,"website":"https://www.sunlightmtn.com"},{"name":"Sunrise Park Resort","state":"Arizona","lat":34.00035,"lon":-109.55378,"website":"https://www.sunriseskiparkaz.com"},{"name":"Tahoe Donner Ski Resort","state":"California","lat":39.35471,"lon":-120.25931,"website":"https://www.skitahoedonner.com"},{"name":"Tamarack Resort","state":"Idaho","lat":44.67068,"lon":-116.12235,"website":"https://www.tamarackidaho.com"},{"name":"Taos Ski Valley, Inc.","state":"New Mexico","lat":36.59544,"lon":-105.45022,"website":"https://www.skitaos.com"},{"name":"Telluride Ski & Golf Resort","state":"Colorado","lat":37.93977,"lon":-107.84826,"website":"https://www.tellurideskiresort.com"},{"name":"Terry Peak Ski Area","state":"South Dakota","lat":44.33523,"lon":-103.84032,"website":"https://www.terrypeak.com"},{"name":"The Homestead","state":"Michigan","lat":44.9142,"lon":-85.96419,"website":"https://www.thehomesteadresort.com"},{"name":"The Summit At Snoqualmie","state":"Washington","lat":47.4254,"lon":-121.41592,"website":"https://www.summitatsnoqualmie.com"},{"name":"Timberline Lodge & Ski Area","state":"Oregon","lat":45.33175,"lon":-121.71146,"website":"https://www.timberlinelodge.com"},{"name":"Timberline Mountain","state":"West Virginia","lat":39.0432,"lon":-79.39905,"website":"https://www.timberlinemountain.com"},{"name":"Treetops Resort","state":"Michigan","lat":45.03373,"lon":-84.58917,"website":"https://www.treetops.com"},{"name":"Utah Olympic Park","state":"Utah","lat":40.71247,"lon":-111.56178,"website":"https://www.utaholympiclegacy.org"},{"name":"Vail Mountain","state":"Colorado","lat":39.60676,"lon":-106.35486,"website":"https://www.vail.com"},{"name":"Wachusett Mountain Ski Area","state":"Massachusetts","lat":42.50359,"lon":-71.88615,"website":"https://www.wachusett.com"},{"name":"Waterville Valley Resort","state":"New Hampshire","lat":43.96651,"lon":-71.52787,"website":"https://www.waterville.com"},{"name":"White Pass Ski Area","state":"Washington","lat":46.6381,"lon":-121.39122,"website":"https://www.skiwhitepass.com"},{"name":"Whiteface Mountain","state":"New York","lat":44.36689,"lon":-73.90269,"website":"https://www.whiteface.com"},{"name":"Whitefish Mountain Resort","state":"Montana","lat":48.48102,"lon":-114.35013,"website":"https://www.skiwhitefish.com"},{"name":"Whitetail Resort","state":"Pennsylvania","lat":39.74247,"lon":-77.93325,"website":"https://www.skiwhitetail.com"},{"name":"Wildcat Mountain","state":"New Hampshire","lat":44.26483,"lon":-71.23963,"website":"https://www.skiwildcat.com"},{"name":"Willamette Pass Resort","state":"Oregon","lat":43.60072,"lon":-122.03656,"website":"https://www.willamettepass.com"},{"name":"Wilmot Mountain","state":"Wisconsin","lat":42.49954,"lon":-88.18747,"website":"https://www.wilmotmountain.com"},{"name":"Windham Mountain","state":"New York","lat":42.29516,"lon":-74.2565,"website":"https://windhammountain.com"},{"name":"Winter Park Resort","state":"Colorado","lat":39.88478,"lon":-105.76272,"website":"https://www.winterparkresort.com"},{"name":"Wintergreen Resort","state":"Virginia","lat":37.91558,"lon":-78.94386,"website":"https://www.wintergreenresort.com"},{"name":"Winterplace Ski Resort","state":"West Virginia","lat":37.59648,"lon":-81.11986,"website":"https://www.winterplace.com"},{"name":"Wisp Resort","state":"Maryland","lat":39.55761,"lon":-79.36325,"website":"https://www.wispresort.com"}];
+
+  const map = L.map('map', {
+    zoomControl: true,
+    minZoom: 3,
+    maxZoom: 14
+  }).setView([39.5, -98.35], 4.3);
+
+  // Dark basemap tiles
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+    subdomains: 'abcd',
+    maxZoom: 19
+  }).addTo(map);
+
+  let openPopup = null;
+
+  RESORTS.forEach(resort => {
+    const marker = L.circleMarker([resort.lat, resort.lon], {
+      radius: 5,
+      className: 'resort-dot',
+      weight: 1.5
+    }).addTo(map);
+
+    const cardHtml = `
+      <div class="resort-hover-card">
+        <div class="name">${escapeHtml(resort.name)}</div>
+        <div class="state">${escapeHtml(resort.state)}</div>
+        <a href="${resort.website}" target="_blank" rel="noopener noreferrer">Visit site &rarr;</a>
+      </div>
+    `;
+
+    marker.bindPopup(cardHtml, {
+      closeButton: false,
+      autoClose: false,
+      closeOnClick: false,
+      offset: [0, 8]
+    });
+
+    // Hover: open the little card beneath the dot
+    marker.on('mouseover', function () {
+      this.openPopup();
+    });
+    marker.on('mouseout', function () {
+      this.closePopup();
+    });
+
+    // Click: go straight to the resort's website
+    marker.on('click', function () {
+      window.open(resort.website, '_blank', 'noopener,noreferrer');
+    });
+  });
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+</script>
+</body>
+</html> -->
