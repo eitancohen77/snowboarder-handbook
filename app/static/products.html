@@ -260,14 +260,23 @@
 
     try {
       const res = await fetch(`${API_BASE}/get_products?${params.toString()}`);
-      if (!res.ok) throw new Error(`Server responded ${res.status}`);
+
+      if (!res.ok) {
+          const error = await res.json();   // Read FastAPI's error response
+          throw new Error(error.detail);    // Use the "detail" field
+      }
+
       const data = await res.json();
       renderResults(data.results || []);
+
     } catch (err) {
-      resultsEl.innerHTML = `<div class="error">Couldn't load results: ${err.message}</div>`;
-      statusEl.textContent = "";
-      return;
+        resultsEl.innerHTML = `
+            <div class="error">${err.message}</div>
+        `;
+        statusEl.textContent = "";
+        return;
     }
+
     searchBtn.disabled = false;
   }
 
