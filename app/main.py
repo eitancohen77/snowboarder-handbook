@@ -9,6 +9,8 @@ from pathlib import Path
 from parsedmockdata import mockdata
 from app.etc.tools import parse_shopping_results
 from fastapi import HTTPException
+from app.db import init_db
+from app.cache import get_cached_results, save_to_cache
 
 
 
@@ -20,8 +22,10 @@ SNOW_KEYWORDS = [
     "ski"
 ]
 
+
 BASE_DIR = Path(__file__).resolve().parent
 load_dotenv(dotenv_path=Path(__file__).parent / ".env")
+serpapi_key = os.getenv("SERPAPI")
 
 app.mount("/static", StaticFiles(directory=BASE_DIR / "static", html=True), name="static")
 
@@ -33,7 +37,9 @@ app.add_middleware(
 )
 
 
-serpapi_key = os.getenv("SERPAPI")
+@app.on_event("startup")
+def on_startup():
+    init_db()
 
 def search_google_shopping(query: str, location: str):
     # THIS WORKS CUT IT OFF TO SAFE SEARCHES.
@@ -51,7 +57,6 @@ def search_google_shopping(query: str, location: str):
 
 @app.get("/get_products")
 def get_products(q: str, location: str = None):
-
     query = q.strip().lower()
 
     if not any(keyword in query for keyword in SNOW_KEYWORDS):
@@ -60,10 +65,15 @@ def get_products(q: str, location: str = None):
             detail="This search is limited to snowboarding/ski gear."
         )
 
-    # data = search_google_shopping(q, location)
-    # parsed_data = parse_shopping_results(data)
+    cached, match_type = get_cached_results(q, location)
+    if cached is not None:
+        return {"results": cached, "source": match_type}  # no SerpApi call
 
-    return {"results": mockdata}
+    data = search_google_shopping(q, location)
+    parsed_data = parse_shopping_results(data)
+    save_to_cache(q, location, parsed_data)
+
+    return {"results": parsed_data, "source": "live"}
 
 @app.get("/products")
 def products():

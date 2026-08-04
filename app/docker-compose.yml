@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: snowboarder_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: snowboarder
+      POSTGRES_PASSWORD: snowboarder_dev_pw
+      POSTGRES_DB: snowboarder
+    ports:
+      - "5432:5432"
+    volumes:
+      - snowboarder_pgdata:/var/lib/postgresql/data
+
+volumes:
+  snowboarder_pgdata:
