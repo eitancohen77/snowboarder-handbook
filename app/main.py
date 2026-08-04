@@ -13,6 +13,11 @@ from app.etc.tools import parse_shopping_results
 
 app = FastAPI()
 
+BASE_DIR = Path(__file__).resolve().parent
+load_dotenv(dotenv_path=Path(__file__).parent / ".env")
+
+app.mount("/static", StaticFiles(directory=BASE_DIR / "static", html=True), name="static")
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -20,8 +25,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-BASE_DIR = Path(__file__).resolve().parent
-load_dotenv(dotenv_path=Path(__file__).parent / ".env")
 
 serpapi_key = os.getenv("SERPAPI")
 
@@ -56,4 +59,4 @@ def resorts():
     return FileResponse(BASE_DIR / "static" / "resorts.html")
 
 
-app.mount("/static", StaticFiles(directory=BASE_DIR / "static", html=True), name="static")
+
