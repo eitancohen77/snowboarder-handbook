@@ -1,5 +1,7 @@
 # Snowboarder Handbook
 
+<video controls src="snowboard guide.mp4" title="Title"></video>
+
 A FastAPI app that lets users search for snowboarding/ski gear and compare prices
 across retailers (via SerpApi's Google Shopping engine), plus a US ski resort
 map with Peak Rating data. Search results are cached in Postgres so repeated or
