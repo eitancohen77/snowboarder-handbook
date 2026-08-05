@@ -54,6 +54,10 @@ def search_google_shopping(query: str, location: str):
     return response.json()
     
 
+@app.get("/")
+def home():
+    return FileResponse(BASE_DIR / "static" / "home.html")
+
 
 @app.get("/get_products")
 def get_products(q: str, location: str = None):

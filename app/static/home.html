@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Snowboarder Handbook</title>
+<style>
+  :root {
+    --slope-navy: #10161f;
+    --slope-navy-light: #1a2331;
+    --ice: #7fd7e8;
+    --snow: #f3f6f8;
+    --muted: #8fa3b5;
+    --flag-orange: #ff6b35;
+    --line: #2c3f52;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--slope-navy);
+    background-image: linear-gradient(180deg, var(--slope-navy) 0%, #0a0f16 100%);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    color: var(--snow);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 64px 24px;
+  }
+
+  header {
+    text-align: center;
+    max-width: 640px;
+    margin-bottom: 56px;
+  }
+
+  header .eyebrow {
+    color: var(--ice);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  header h1 {
+    font-size: 40px;
+    margin: 10px 0 12px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+
+  header p {
+    color: var(--muted);
+    font-size: 15px;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .card-row {
+    display: flex;
+    gap: 28px;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 960px;
+    width: 100%;
+  }
+
+  .nav-card {
+    flex: 1 1 380px;
+    max-width: 440px;
+    min-height: 280px;
+    background: var(--slope-navy-light);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 36px 32px;
+    text-decoration: none;
+    color: var(--snow);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.18s ease, filter 0.18s ease, border-color 0.18s ease;
+  }
+
+  .nav-card:hover {
+    transform: scale(1.035);
+    filter: brightness(1.12);
+    border-color: var(--flag-orange);
+  }
+
+  .nav-card:active {
+    transform: scale(1.01);
+  }
+
+  .nav-card .icon {
+    position: absolute;
+    top: 28px;
+    right: 28px;
+    width: 46px;
+    height: 46px;
+    opacity: 0.85;
+  }
+
+  .nav-card .eyebrow {
+    color: var(--ice);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-size: 11px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .nav-card h2 {
+    font-size: 26px;
+    margin: 0 0 10px;
+    font-weight: 800;
+  }
+
+  .nav-card p {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 0 0 20px;
+  }
+
+  .nav-card .cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--flag-orange);
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .nav-card .cta svg {
+    transition: transform 0.18s ease;
+  }
+
+  .nav-card:hover .cta svg {
+    transform: translateX(4px);
+  }
+
+  /* Subtle background glow accents per card */
+  .nav-card.resorts::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 85% 15%, rgba(127, 215, 232, 0.14), transparent 55%);
+    pointer-events: none;
+  }
+  .nav-card.gear::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 85% 15%, rgba(255, 107, 53, 0.16), transparent 55%);
+    pointer-events: none;
+  }
+
+  footer {
+    margin-top: 56px;
+    color: var(--muted);
+    font-size: 12px;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+  <header>
+    <div class="eyebrow">Snowboarder Handbook</div>
+    <h1>Everything for your next run</h1>
+    <p>Find the gear you need and the mountains to ride it on.</p>
+  </header>
+
+  <div class="card-row">
+    <a class="nav-card resorts" href="/resorts">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="#7fd7e8" stroke-width="1.6">
+        <path d="M3 20l6-10 4 6 2-3 6 7H3z" stroke-linejoin="round" stroke-linecap="round"/>
+        <circle cx="17" cy="6" r="2" stroke-linecap="round"/>
+      </svg>
+      <div class="eyebrow">Trail Map</div>
+      <h2>US Ski Resorts</h2>
+      <p>Browse an interactive map of resorts across the US, with Peak Ratings for the top-rated mountains.</p>
+      <span class="cta">Explore the map
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+    </a>
+
+    <a class="nav-card gear" href="/products">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="#ff6b35" stroke-width="1.6">
+        <path d="M4 16c1-4 3-9 8-9s7 5 8 9" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M3 16h18l-2 4H5l-2-4z" stroke-linejoin="round" stroke-linecap="round"/>
+      </svg>
+      <div class="eyebrow">Gear Finder</div>
+      <h2>Find Who's Selling It</h2>
+      <p>Search snowboard boots, boards, and more, and compare prices across retailers in one place.</p>
+      <span class="cta">Start searching
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+    </a>
+  </div>
+
+  <footer>Built for snowboarders, by snowboarders.</footer>
+
+</body>
+</html>
