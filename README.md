@@ -64,12 +64,6 @@ source venv/bin/activate
 ### 2. Install dependencies
 
 ```bash
-pip install fastapi uvicorn requests python-dotenv sqlalchemy psycopg2-binary
-```
-
-Or, if a `requirements.txt` is present:
-
-```bash
 pip install -r requirements.txt
 ```
 
