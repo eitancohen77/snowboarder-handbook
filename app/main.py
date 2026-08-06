@@ -9,9 +9,8 @@ from pathlib import Path
 from parsedmockdata import mockdata
 from app.etc.tools import parse_shopping_results
 from fastapi import HTTPException
-from app.db import init_db
-from app.cache import get_cached_results, save_to_cache
-
+from app.db import init_db, SessionLocal
+from app.cache import get_cached_results, save_to_cache, save_to_cache, budget_remaining, increment_usage
 
 
 app = FastAPI()
@@ -73,10 +72,17 @@ def get_products(q: str, location: str = None):
     if cached is not None:
         return {"results": cached, "source": match_type}  # no SerpApi call
 
+    with SessionLocal() as db:
+        if budget_remaining(db) <= 0:
+            raise HTTPException(
+                status_code=503,
+                detail="Live search is temporarily paused for this month. Try a common search"
+            )
 
     data = search_google_shopping(q, location)
     parsed_data = parse_shopping_results(data)
     save_to_cache(q, location, parsed_data)
+    increment_usage(db)
 
     return {"results": parsed_data, "source": "live"}
 
