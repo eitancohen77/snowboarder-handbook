@@ -73,6 +73,7 @@ def get_products(q: str, location: str = None):
     if cached is not None:
         return {"results": cached, "source": match_type}  # no SerpApi call
 
+
     data = search_google_shopping(q, location)
     parsed_data = parse_shopping_results(data)
     save_to_cache(q, location, parsed_data)

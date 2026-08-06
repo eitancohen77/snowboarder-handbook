@@ -25,6 +25,12 @@ class SearchCache(Base):
     results = Column(JSONB, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
+# this makes it so that we can track how many api calls have been made.
+class ApiUsage(Base):
+    __tablename__ = "api_usage"
+    id = Column(Integer, primary_key=True)
+    month = Column(String, unique=True)
+    call_count = Column(Integer, default=0)
 
 def init_db():
     Base.metadata.create_all(bind=engine)
